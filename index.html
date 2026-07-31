@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="汐汐学习工作台">
+<title>🌻 汐汐学习工作台</title>
+<style>/* ===== 汐汐学习工作台 · 浅蓝柔和风 ===== */
+:root{
+  --blue1:#e3f2fd; --blue2:#bbdefb; --blue3:#90caf9; --blue4:#64b5f6; --blue5:#42a5f5;
+  --blue6:#2196f3; --blue7:#1976d2; --blue8:#1565c0;
+  --ink:#1a237e; --ink2:#3949ab; --gray:#78909c;
+  --orange:#ff9800; --orange-d:#f57c00;
+  --green:#66bb6a; --green-d:#43a047;
+  --red:#ef5350; --pink:#ec407a; --purple:#ab47bc; --yellow:#ffd54f;
+  --card:#ffffff; --bg:#e3f2fd;
+  --radius:16px; --radius-s:10px;
+  --shadow:0 4px 16px rgba(33,150,243,.12);
+  --sidebar-w:88px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",system-ui,sans-serif;
+  color:var(--ink);background:var(--bg);-webkit-font-smoothing:antialiased}
+body{display:flex;min-height:100vh}
+
+/* ===== 侧边栏 ===== */
+.sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,#bbdefb 0%,#90caf9 100%);
+  position:fixed;left:0;top:0;bottom:0;z-index:100;display:flex;flex-direction:column;
+  align-items:center;padding:10px 0;gap:4px;overflow-y:auto;box-shadow:2px 0 12px rgba(33,150,243,.15)}
+.sidebar::-webkit-scrollbar{width:0}
+.nav-item{width:72px;padding:8px 4px;border-radius:var(--radius-s);text-align:center;cursor:pointer;
+  transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink)}
+.nav-item .ico{font-size:22px;line-height:1}
+.nav-item .lbl{font-size:10px;font-weight:600;line-height:1.2}
+.nav-item:hover{background:rgba(255,255,255,.5)}
+.nav-item.active{background:var(--blue6);color:#fff;box-shadow:0 3px 8px rgba(33,150,243,.4)}
+
+/* ===== 主区域 ===== */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;min-width:0}
+
+/* 顶部导航 */
+.topbar{background:#fff;display:flex;align-items:center;padding:10px 16px;position:sticky;top:0;z-index:50;
+  box-shadow:0 2px 8px rgba(33,150,243,.1);gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.topbar::-webkit-scrollbar{height:0}
+.topbar .brand{font-size:18px;font-weight:800;color:var(--blue7);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.topbar .brand .sun{font-size:24px}
+.topbar .spacer{flex:1}
+.top-tab{padding:8px 16px;border-radius:999px;font-size:14px;font-weight:700;cursor:pointer;
+  border:2px solid var(--blue2);background:#fff;color:var(--blue7);transition:all .2s;white-space:nowrap}
+.top-tab:hover{background:var(--blue1)}
+.top-tab.active{background:var(--blue6);color:#fff;border-color:var(--blue6)}
+
+/* 内容区 */
+.content{padding:14px;max-width:1100px;width:100%;margin:0 auto;flex:1}
+
+/* 通用卡片 */
+.card{background:var(--card);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);margin-bottom:14px}
+.card-title{font-size:17px;font-weight:800;color:var(--blue7);margin:0 0 10px;display:flex;align-items:center;gap:6px}
+
+/* 标签条 */
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px;-webkit-overflow-scrolling:touch}
+.tabs::-webkit-scrollbar{height:4px}
+.tabs::-webkit-scrollbar-thumb{background:var(--blue3);border-radius:2px}
+.tab{padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;
+  background:var(--blue1);color:var(--blue7);white-space:nowrap;border:2px solid transparent;transition:all .15s}
+.tab:hover{background:var(--blue2)}
+.tab.active{background:var(--blue6);color:#fff;border-color:var(--blue6);box-shadow:0 2px 6px rgba(33,150,243,.3)}
+
+/* ===== 识字卡片 ===== */
+.char-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.char-card{background:linear-gradient(135deg,#fff 0%,#e3f2fd 100%);border-radius:var(--radius);
+  padding:14px 8px;text-align:center;border:2px solid var(--blue2);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.char-card:hover{transform:translateY(-3px);border-color:var(--blue5);box-shadow:0 6px 16px rgba(33,150,243,.2)}
+.char-card .emoji{font-size:30px;line-height:1.2}
+.char-card .hanzi{font-size:42px;font-weight:800;color:var(--blue8);line-height:1.1;margin:4px 0}
+.char-card .pinyin{font-size:15px;color:var(--blue6);font-weight:600}
+.char-card .word{font-size:12px;color:var(--gray);margin-top:4px}
+.char-card.learned{background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%);border-color:var(--green)}
+.char-card.learned .hanzi{color:var(--green-d)}
+.char-card .check{position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;
+  background:var(--green);color:#fff;font-size:12px;display:none;align-items:center;justify-content:center}
+.char-card.learned .check{display:flex}
+
+/* ===== 古诗卡片 ===== */
+.poem-card{background:linear-gradient(135deg,#fffef7 0%,#fff8e1 100%);border:2px solid #ffe082;border-radius:var(--radius);padding:18px}
+.poem-head{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.poem-title{font-size:22px;font-weight:800;color:#e65100}
+.poem-author{font-size:13px;color:var(--gray)}
+.diff-tag{padding:2px 10px;border-radius:999px;font-size:11px;font-weight:700;color:#fff}
+.diff-1{background:var(--green)}.diff-2{background:var(--orange)}.diff-3{background:var(--red)}
+.poem-content{font-size:20px;line-height:2;color:var(--ink);text-align:center;font-weight:600;
+  font-family:"STKaiti","KaiTi",serif;white-space:pre-line;margin:14px 0}
+.poem-explain{background:rgba(255,255,255,.6);border-radius:var(--radius-s);padding:12px;
+  font-size:14px;line-height:1.8;color:#5d4037;border-left:4px solid var(--orange)}
+.btn-speak{background:var(--orange);color:#fff;border:none;border-radius:999px;padding:8px 18px;
+  font-size:14px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px;margin-top:12px}
+.btn-speak:hover{background:var(--orange-d)}
+.btn-speak:disabled{opacity:.5}
+
+/* ===== 绘本 ===== */
+.book-recommend{background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);border-radius:var(--radius);
+  padding:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.book-recommend .cover{width:90px;height:90px;border-radius:12px;background:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:50px;flex-shrink:0;box-shadow:var(--shadow)}
+.book-recommend .info{flex:1;min-width:180px}
+.book-recommend .info h3{margin:0 0 4px;font-size:18px;color:var(--blue7)}
+.book-recommend .info .author{font-size:13px;color:var(--gray);margin-bottom:6px}
+.book-recommend .info .desc{font-size:13px;line-height:1.6;color:var(--ink2)}
+.btn-read{background:var(--orange);color:#fff;border:none;border-radius:999px;padding:8px 20px;
+  font-size:14px;font-weight:700;cursor:pointer}
+.btn-read:hover{background:var(--orange-d)}
+.book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+.book-item{background:#fff;border-radius:var(--radius);padding:10px;text-align:center;cursor:pointer;
+  border:2px solid transparent;transition:all .2s}
+.book-item:hover{border-color:var(--blue4);transform:translateY(-2px)}
+.book-item .cover{width:100%;aspect-ratio:1;border-radius:10px;background:var(--blue1);display:flex;
+  align-items:center;justify-content:center;font-size:42px;margin-bottom:6px}
+.book-item .name{font-size:13px;font-weight:600;color:var(--ink);line-height:1.3}
+
+/* ===== 拼音/英语 卡片 ===== */
+.pinyin-grid,.eng-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.pinyin-card{background:linear-gradient(135deg,#fff 0%,#f3e5f5 100%);border:2px solid #ce93d8;border-radius:var(--radius);
+  padding:14px 8px;text-align:center;cursor:pointer;transition:all .2s}
+.pinyin-card:hover{transform:translateY(-3px);border-color:#ab47bc;box-shadow:0 6px 14px rgba(156,39,176,.15)}
+.pinyin-card .py{font-size:36px;font-weight:800;color:#6a1b9a;line-height:1.1}
+.pinyin-card .emo{font-size:24px;margin:4px 0}
+.pinyin-card .ex{font-size:14px;color:var(--gray)}
+.eng-card{background:linear-gradient(135deg,#fff 0%,#e8f5e9 100%);border:2px solid #a5d6a7;border-radius:var(--radius);
+  padding:12px 8px;text-align:center;cursor:pointer;transition:all .2s}
+.eng-card:hover{transform:translateY(-3px);border-color:var(--green);box-shadow:0 6px 14px rgba(76,175,80,.15)}
+.eng-card .emo{font-size:32px;line-height:1.2}
+.eng-card .word{font-size:16px;font-weight:800;color:#2e7d32;margin:4px 0 2px}
+.eng-card .cn{font-size:13px;color:var(--gray)}
+.eng-card .speak{background:var(--green);color:#fff;border:none;border-radius:999px;padding:4px 12px;
+  font-size:12px;font-weight:600;cursor:pointer;margin-top:6px;display:inline-flex;align-items:center;gap:2px}
+.eng-card .speak:hover{background:var(--green-d)}
+
+/* ===== 算术 ===== */
+.math-stats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.math-stat{flex:1;min-width:70px;background:var(--blue1);border-radius:var(--radius-s);padding:10px;text-align:center}
+.math-stat .v{font-size:22px;font-weight:800;color:var(--blue7)}
+.math-stat .l{font-size:11px;color:var(--gray)}
+.math-area{background:linear-gradient(135deg,#e3f2fd 0%,#bbdefb 100%);border-radius:var(--radius);padding:30px 16px;text-align:center}
+.math-q{font-size:48px;font-weight:800;color:var(--blue8);margin-bottom:24px;font-family:Arial}
+.math-opts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:360px;margin:0 auto}
+.math-opt{background:#fff;border:3px solid var(--blue3);border-radius:var(--radius);padding:16px;
+  font-size:28px;font-weight:800;color:var(--blue7);cursor:pointer;transition:all .15s}
+.math-opt:hover{border-color:var(--blue6);background:var(--blue1)}
+.math-opt.correct{background:var(--green);border-color:var(--green);color:#fff}
+.math-opt.wrong{background:var(--red);border-color:var(--red);color:#fff;animation:shake .4s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+/* ===== 思维游戏 ===== */
+.mind-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.mind-card{background:linear-gradient(135deg,#fff 0%,#e3f2fd 100%);border:2px solid var(--blue3);
+  border-radius:var(--radius);padding:18px 12px;text-align:center;cursor:pointer;transition:all .2s}
+.mind-card:hover{transform:translateY(-3px);border-color:var(--blue6);box-shadow:0 8px 18px rgba(33,150,243,.2)}
+.mind-card .ico{font-size:40px}
+.mind-card .name{font-size:15px;font-weight:700;color:var(--blue7);margin-top:8px}
+.mind-card .desc{font-size:12px;color:var(--gray);margin-top:4px;line-height:1.4}
+
+/* 思维游戏弹层 */
+.game-modal{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:none;
+  align-items:center;justify-content:center;padding:16px}
+.game-modal.show{display:flex}
+.game-box{background:#fff;border-radius:var(--radius);padding:18px;max-width:480px;width:100%;
+  max-height:85vh;overflow-y:auto;position:relative}
+.game-box h3{margin:0 0 12px;color:var(--blue7);font-size:18px}
+.game-close{position:absolute;top:8px;right:12px;font-size:24px;cursor:pointer;color:var(--gray);background:none;border:none}
+.mem-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.mem-card{aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-size:30px;cursor:pointer;background:var(--blue3);color:transparent;transition:all .3s;user-select:none}
+.mem-card.flip{background:#fff;color:inherit;border:2px solid var(--blue5)}
+.mem-card.matched{background:var(--green);color:#fff;border-color:var(--green)}
+.seq-board{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:14px}
+.seq-num{width:60px;height:60px;border-radius:12px;background:var(--blue4);color:#fff;display:flex;
+  align-items:center;justify-content:center;font-size:24px;font-weight:800;cursor:pointer}
+.seq-num.done{background:var(--green);opacity:.5}
+.seq-num.err{background:var(--red);animation:shake .4s}
+
+/* ===== 今日任务 ===== */
+.task-list{display:flex;flex-direction:column;gap:10px}
+.task-row{display:flex;align-items:center;gap:12px;background:#fff;border:2px solid var(--blue2);
+  border-radius:var(--radius-s);padding:12px}
+.task-row.done{background:#e8f5e9;border-color:var(--green)}
+.task-check{width:26px;height:26px;border-radius:8px;border:2px solid var(--blue4);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;transition:all .2s}
+.task-check.on{background:var(--green);border-color:var(--green)}
+.task-info{flex:1}
+.task-info .name{font-size:15px;font-weight:600;color:var(--ink)}
+.task-info .pts{font-size:13px;color:var(--orange-d);font-weight:700}
+.sun-total{background:linear-gradient(135deg,#fffde7 0%,#fff9c4 100%);border:2px solid var(--yellow);
+  border-radius:var(--radius);padding:16px;text-align:center;margin-bottom:14px}
+.sun-total .num{font-size:42px;font-weight:800;color:var(--orange-d)}
+.sun-total .lbl{font-size:13px;color:var(--gray)}
+
+/* ===== 奖励成就 ===== */
+.trophy{background:linear-gradient(135deg,#fff8e1 0%,#ffecb3 100%);border:2px solid var(--yellow);
+  border-radius:var(--radius);padding:18px;text-align:center;margin-bottom:14px}
+.trophy .ico{font-size:48px}
+.trophy .pts{font-size:32px;font-weight:800;color:var(--orange-d);margin:6px 0}
+.trophy .tip{font-size:13px;color:var(--gray)}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.ach-card{background:#fff;border:2px solid var(--blue2);border-radius:var(--radius);padding:14px;text-align:center;position:relative}
+.ach-card.unlocked{background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%);border-color:var(--green)}
+.ach-card .ico{font-size:36px;filter:grayscale(1);opacity:.5}
+.ach-card.unlocked .ico{filter:none;opacity:1}
+.ach-card .name{font-size:13px;font-weight:700;color:var(--ink);margin-top:6px;line-height:1.3}
+.ach-card .desc{font-size:11px;color:var(--gray);margin-top:2px}
+.ach-card .badge{position:absolute;top:6px;right:6px;width:22px;height:22px;border-radius:50%;
+  background:var(--gray);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center}
+.ach-card.unlocked .badge{background:var(--green)}
+
+/* ===== 日历 ===== */
+.cal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cal-head .ym{font-size:17px;font-weight:800;color:var(--blue7)}
+.cal-nav{background:var(--blue1);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;color:var(--blue7);font-weight:700}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal-week{text-align:center;font-size:12px;color:var(--gray);font-weight:700;padding:4px 0}
+.cal-cell{aspect-ratio:1;background:var(--blue1);border-radius:8px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;font-size:14px;color:var(--ink);position:relative}
+.cal-cell.empty{background:transparent}
+.cal-cell.done{background:var(--green);color:#fff}
+.cal-cell.done::after{content:'✓';position:absolute;bottom:2px;font-size:10px}
+.cal-cell.today{background:var(--blue6);color:#fff;box-shadow:0 0 0 3px var(--yellow)}
+.cal-stats{display:flex;gap:8px;margin-top:14px}
+.cal-stat{flex:1;background:var(--blue1);border-radius:var(--radius-s);padding:10px;text-align:center}
+.cal-stat .v{font-size:20px;font-weight:800;color:var(--blue7)}
+.cal-stat .l{font-size:11px;color:var(--gray)}
+
+/* ===== Toast ===== */
+.toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(60px);
+  background:var(--blue8);color:#fff;padding:10px 20px;border-radius:999px;font-size:14px;font-weight:600;
+  opacity:0;transition:.3s;z-index:300;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ===== 浮动按钮（手机返回顶部） ===== */
+.fab{position:fixed;right:16px;bottom:20px;width:44px;height:44px;border-radius:50%;background:var(--blue6);
+  color:#fff;border:none;font-size:20px;cursor:pointer;box-shadow:0 4px 12px rgba(33,150,243,.4);z-index:90;display:none}
+
+/* ===== 响应式 ===== */
+@media(max-width:640px){
+  :root{--sidebar-w:64px}
+  .sidebar{width:64px}
+  .nav-item{width:56px}
+  .nav-item .ico{font-size:20px}
+  .nav-item .lbl{font-size:9px}
+  .content{padding:10px}
+  .char-grid{grid-template-columns:repeat(2,1fr)}
+  .char-card .hanzi{font-size:36px}
+  .math-q{font-size:40px}
+  .math-opt{font-size:24px;padding:12px}
+  .topbar .brand{font-size:15px}
+  .topbar .brand .sun{font-size:20px}
+  .top-tab{padding:6px 12px;font-size:12px}
+  .book-recommend .cover{width:70px;height:70px;font-size:38px}
+  .poem-content{font-size:18px}
+  .fab{display:block}
+}
+
+/* 隐藏滚动条但保留功能 */
+.section{display:none}
+.section.active{display:block;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* PWA 提示 */
+.pwa-tip{position:fixed;bottom:0;left:0;right:0;background:var(--blue7);color:#fff;padding:10px 16px;
+  font-size:13px;text-align:center;z-index:250;display:none}
+.pwa-tip.show{display:block}
+.pwa-tip button{background:#fff;color:var(--blue7);border:none;border-radius:6px;padding:4px 10px;margin-left:8px;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- 侧边栏 -->
+<nav class="sidebar" id="sidebar"></nav>
+
+<!-- 主区域 -->
+<div class="main">
+  <!-- 顶部导航 -->
+  <header class="topbar">
+    <div class="brand"><span class="sun">🌻</span>汐汐学习工作台</div>
+    <div class="spacer"></div>
+    <div class="top-tab active" data-jump="tasks">📋 今日学习</div>
+    <div class="top-tab" data-jump="rewards">⭐ 我的收藏</div>
+  </header>
+
+  <!-- 内容区 -->
+  <main class="content" id="content">
+    <!-- 识字 -->
+    <section class="section" id="sec-chars">
+      <div class="card">
+        <h2 class="card-title">📖 每日识字</h2>
+        <div class="tabs" id="charTabs"></div>
+        <div class="char-grid" id="charGrid"></div>
+      </div>
+    </section>
+
+    <!-- 古诗 -->
+    <section class="section" id="sec-poems">
+      <div class="card">
+        <h2 class="card-title">📜 每日古诗</h2>
+        <div class="tabs" id="poemTabs"></div>
+        <div id="poemBox"></div>
+      </div>
+    </section>
+
+    <!-- 绘本 -->
+    <section class="section" id="sec-books">
+      <div class="card">
+        <h2 class="card-title">📚 每日一读</h2>
+        <div id="bookRecommend"></div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">📚 绘本馆</h2>
+        <div class="tabs" id="bookTabs"></div>
+        <div class="book-grid" id="bookGrid"></div>
+      </div>
+    </section>
+
+    <!-- 拼音 -->
+    <section class="section" id="sec-pinyin">
+      <div class="card">
+        <h2 class="card-title">🔤 拼音学习</h2>
+        <div class="tabs" id="pinyinTabs"></div>
+        <div class="pinyin-grid" id="pinyinGrid"></div>
+      </div>
+    </section>
+
+    <!-- 英语 -->
+    <section class="section" id="sec-english">
+      <div class="card">
+        <h2 class="card-title">🌍 英语启蒙</h2>
+        <div class="tabs" id="engTabs"></div>
+        <div class="eng-grid" id="engGrid"></div>
+      </div>
+    </section>
+
+    <!-- 算术 -->
+    <section class="section" id="sec-math">
+      <div class="card">
+        <h2 class="card-title">🔢 10以内加减法</h2>
+        <div class="tabs" id="mathTabs">
+          <div class="tab active" data-mt="mix">混合</div>
+          <div class="tab" data-mt="add">加法</div>
+          <div class="tab" data-mt="sub">减法</div>
+        </div>
+        <div class="math-stats" id="mathStats"></div>
+        <div class="math-area">
+          <div class="math-q" id="mathQ">9 - 7 = ?</div>
+          <div class="math-opts" id="mathOpts"></div>
+        </div>
+        <div style="text-align:center;margin-top:12px">
+          <button class="top-tab" onclick="nextMath()">下一题 ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 思维 -->
+    <section class="section" id="sec-mind">
+      <div class="card">
+        <h2 class="card-title">🧠 思维游戏</h2>
+        <div class="mind-list" id="mindList"></div>
+      </div>
+    </section>
+
+    <!-- 今日任务 -->
+    <section class="section active" id="sec-tasks">
+      <div class="sun-total">
+        <div class="num"><span id="sunCount">0</span> ☀️</div>
+        <div class="lbl">今日获得太阳积分</div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">📋 今日打卡任务</h2>
+        <div class="task-list" id="taskList"></div>
+      </div>
+    </section>
+
+    <!-- 奖励 -->
+    <section class="section" id="sec-rewards">
+      <div class="trophy">
+        <div class="ico">🏆</div>
+        <div class="pts"><span id="totalSun">0</span> ☀️</div>
+        <div class="tip" id="achTip">继续加油，解锁更多成就！</div>
+      </div>
+      <div class="card">
+        <h2 class="card-title">🎖️ 我的成就</h2>
+        <div class="ach-grid" id="achGrid"></div>
+      </div>
+    </section>
+
+    <!-- 日历 -->
+    <section class="section" id="sec-calendar">
+      <div class="card">
+        <h2 class="card-title">📅 学习日历</h2>
+        <div class="cal-head">
+          <button class="cal-nav" onclick="calMove(-1)">◀</button>
+          <span class="ym" id="calYM"></span>
+          <button class="cal-nav" onclick="calMove(1)">▶</button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+        <div class="cal-stats" id="calStats"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- 思维游戏弹层 -->
+<div class="game-modal" id="gameModal">
+  <div class="game-box" id="gameBox"></div>
+</div>
+
+<!-- Toast & FAB -->
+<div class="toast" id="toast"></div>
+<button class="fab" id="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+<div class="pwa-tip" id="pwaTip">
+  📱 把汐汐学习工作台添加到桌面，像APP一样全屏使用！
+  <button onclick="hidePwaTip()">知道啦</button>
+</div>
+
+<script>// === 汐汐学习工作台 数据文件 ===
+const CHARS = [{"day": 1, "char": "天", "pinyin": "tiān", "emoji": "☀️", "word": "天空"}, {"day": 1, "char": "日", "pinyin": "rì", "emoji": "🌞", "word": "日出"}, {"day": 1, "char": "月", "pinyin": "yuè", "emoji": "🌙", "word": "月亮"}, {"day": 1, "char": "星", "pinyin": "xīng", "emoji": "⭐", "word": "星星"}, {"day": 1, "char": "云", "pinyin": "yún", "emoji": "☁️", "word": "白云"}, {"day": 1, "char": "风", "pinyin": "fēng", "emoji": "🍃", "word": "大风"}, {"day": 2, "char": "山", "pinyin": "shān", "emoji": "⛰️", "word": "大山"}, {"day": 2, "char": "水", "pinyin": "shuǐ", "emoji": "💧", "word": "河水"}, {"day": 2, "char": "火", "pinyin": "huǒ", "emoji": "🔥", "word": "大火"}, {"day": 2, "char": "土", "pinyin": "tǔ", "emoji": "🟫", "word": "泥土"}, {"day": 2, "char": "石", "pinyin": "shí", "emoji": "🪨", "word": "石头"}, {"day": 2, "char": "沙", "pinyin": "shā", "emoji": "🏖️", "word": "沙子"}, {"day": 3, "char": "木", "pinyin": "mù", "emoji": "🪵", "word": "木头"}, {"day": 3, "char": "树", "pinyin": "shù", "emoji": "🌳", "word": "大树"}, {"day": 3, "char": "林", "pinyin": "lín", "emoji": "🌲", "word": "森林"}, {"day": 3, "char": "草", "pinyin": "cǎo", "emoji": "🌿", "word": "青草"}, {"day": 3, "char": "花", "pinyin": "huā", "emoji": "🌸", "word": "花朵"}, {"day": 3, "char": "叶", "pinyin": "yè", "emoji": "🍃", "word": "树叶"}, {"day": 4, "char": "雨", "pinyin": "yǔ", "emoji": "🌧️", "word": "下雨"}, {"day": 4, "char": "雪", "pinyin": "xuě", "emoji": "❄️", "word": "下雪"}, {"day": 4, "char": "雷", "pinyin": "léi", "emoji": "⚡", "word": "雷声"}, {"day": 4, "char": "电", "pinyin": "diàn", "emoji": "💡", "word": "闪电"}, {"day": 4, "char": "冰", "pinyin": "bīng", "emoji": "🧊", "word": "冰块"}, {"day": 4, "char": "露", "pinyin": "lù", "emoji": "💫", "word": "露水"}, {"day": 5, "char": "人", "pinyin": "rén", "emoji": "🧑", "word": "人们"}, {"day": 5, "char": "口", "pinyin": "kǒu", "emoji": "👄", "word": "开口"}, {"day": 5, "char": "手", "pinyin": "shǒu", "emoji": "✋", "word": "小手"}, {"day": 5, "char": "目", "pinyin": "mù", "emoji": "👀", "word": "目光"}, {"day": 5, "char": "耳", "pinyin": "ěr", "emoji": "👂", "word": "耳朵"}, {"day": 5, "char": "足", "pinyin": "zú", "emoji": "🦶", "word": "双足"}, {"day": 6, "char": "头", "pinyin": "tóu", "emoji": "🧠", "word": "头顶"}, {"day": 6, "char": "面", "pinyin": "miàn", "emoji": "😊", "word": "脸面"}, {"day": 6, "char": "鼻", "pinyin": "bí", "emoji": "👃", "word": "鼻子"}, {"day": 6, "char": "舌", "pinyin": "shé", "emoji": "👅", "word": "舌头"}, {"day": 6, "char": "牙", "pinyin": "yá", "emoji": "🦷", "word": "牙齿"}, {"day": 6, "char": "发", "pinyin": "fà", "emoji": "💇", "word": "头发"}, {"day": 7, "char": "心", "pinyin": "xīn", "emoji": "❤️", "word": "开心"}, {"day": 7, "char": "血", "pinyin": "xuè", "emoji": "🩸", "word": "血液"}, {"day": 7, "char": "骨", "pinyin": "gǔ", "emoji": "🦴", "word": "骨头"}, {"day": 7, "char": "肉", "pinyin": "ròu", "emoji": "🥩", "word": "鲜肉"}, {"day": 7, "char": "皮", "pinyin": "pí", "emoji": "🧴", "word": "皮肤"}, {"day": 7, "char": "毛", "pinyin": "máo", "emoji": "🧶", "word": "皮毛"}, {"day": 8, "char": "鸟", "pinyin": "niǎo", "emoji": "🐦", "word": "小鸟"}, {"day": 8, "char": "鸡", "pinyin": "jī", "emoji": "🐔", "word": "小鸡"}, {"day": 8, "char": "鸭", "pinyin": "yā", "emoji": "🦆", "word": "鸭子"}, {"day": 8, "char": "鹅", "pinyin": "é", "emoji": "🦢", "word": "白鹅"}, {"day": 8, "char": "燕", "pinyin": "yàn", "emoji": "🕊️", "word": "燕子"}, {"day": 8, "char": "雀", "pinyin": "què", "emoji": "🐧", "word": "麻雀"}, {"day": 9, "char": "鱼", "pinyin": "yú", "emoji": "🐟", "word": "小鱼"}, {"day": 9, "char": "虾", "pinyin": "xiā", "emoji": "🦐", "word": "大虾"}, {"day": 9, "char": "蛙", "pinyin": "wā", "emoji": "🐸", "word": "青蛙"}, {"day": 9, "char": "蛇", "pinyin": "shé", "emoji": "🐍", "word": "长蛇"}, {"day": 9, "char": "龟", "pinyin": "guī", "emoji": "🐢", "word": "乌龟"}, {"day": 9, "char": "贝", "pinyin": "bèi", "emoji": "🐚", "word": "贝壳"}, {"day": 10, "char": "马", "pinyin": "mǎ", "emoji": "🐴", "word": "小马"}, {"day": 10, "char": "牛", "pinyin": "niú", "emoji": "🐂", "word": "水牛"}, {"day": 10, "char": "羊", "pinyin": "yáng", "emoji": "🐑", "word": "小羊"}, {"day": 10, "char": "猪", "pinyin": "zhū", "emoji": "🐷", "word": "小猪"}, {"day": 10, "char": "狗", "pinyin": "gǒu", "emoji": "🐶", "word": "小狗"}, {"day": 10, "char": "猫", "pinyin": "māo", "emoji": "🐱", "word": "小猫"}, {"day": 11, "char": "虎", "pinyin": "hǔ", "emoji": "🐯", "word": "老虎"}, {"day": 11, "char": "狮", "pinyin": "shī", "emoji": "🦁", "word": "狮子"}, {"day": 11, "char": "象", "pinyin": "xiàng", "emoji": "🐘", "word": "大象"}, {"day": 11, "char": "鹿", "pinyin": "lù", "emoji": "🦌", "word": "小鹿"}, {"day": 11, "char": "兔", "pinyin": "tù", "emoji": "🐰", "word": "白兔"}, {"day": 11, "char": "熊", "pinyin": "xióng", "emoji": "🐻", "word": "小熊"}, {"day": 12, "char": "虫", "pinyin": "chóng", "emoji": "🐛", "word": "小虫"}, {"day": 12, "char": "蚁", "pinyin": "yǐ", "emoji": "🐜", "word": "蚂蚁"}, {"day": 12, "char": "蜂", "pinyin": "fēng", "emoji": "🐝", "word": "蜜蜂"}, {"day": 12, "char": "蝶", "pinyin": "dié", "emoji": "🦋", "word": "蝴蝶"}, {"day": 12, "char": "蛛", "pinyin": "zhū", "emoji": "🕸️", "word": "蜘蛛"}, {"day": 12, "char": "茧", "pinyin": "jiǎn", "emoji": "🪺", "word": "蚕茧"}, {"day": 13, "char": "爸", "pinyin": "bà", "emoji": "👨", "word": "爸爸"}, {"day": 13, "char": "妈", "pinyin": "mā", "emoji": "👩", "word": "妈妈"}, {"day": 13, "char": "哥", "pinyin": "gē", "emoji": "👦", "word": "哥哥"}, {"day": 13, "char": "弟", "pinyin": "dì", "emoji": "🧒", "word": "弟弟"}, {"day": 13, "char": "姐", "pinyin": "jiě", "emoji": "👧", "word": "姐姐"}, {"day": 13, "char": "妹", "pinyin": "mèi", "emoji": "🧒‍🧒", "word": "妹妹"}, {"day": 14, "char": "爷", "pinyin": "yé", "emoji": "🧓", "word": "爷爷"}, {"day": 14, "char": "奶", "pinyin": "nǎi", "emoji": "👵", "word": "奶奶"}, {"day": 14, "char": "叔", "pinyin": "shū", "emoji": "👨‍🦱", "word": "叔叔"}, {"day": 14, "char": "姑", "pinyin": "gū", "emoji": "👩‍🦰", "word": "姑姑"}, {"day": 14, "char": "孙", "pinyin": "sūn", "emoji": "👶", "word": "孙子"}, {"day": 14, "char": "亲", "pinyin": "qīn", "emoji": "🤝", "word": "亲人"}, {"day": 15, "char": "家", "pinyin": "jiā", "emoji": "🏠", "word": "回家"}, {"day": 15, "char": "门", "pinyin": "mén", "emoji": "🚪", "word": "大门"}, {"day": 15, "char": "窗", "pinyin": "chuāng", "emoji": "🪟", "word": "窗户"}, {"day": 15, "char": "墙", "pinyin": "qiáng", "emoji": "🧱", "word": "墙壁"}, {"day": 15, "char": "床", "pinyin": "chuáng", "emoji": "🛏️", "word": "小床"}, {"day": 15, "char": "桌", "pinyin": "zhuō", "emoji": "🪑", "word": "桌子"}, {"day": 16, "char": "椅", "pinyin": "yǐ", "emoji": "💺", "word": "椅子"}, {"day": 16, "char": "柜", "pinyin": "guì", "emoji": "🗄️", "word": "柜子"}, {"day": 16, "char": "灯", "pinyin": "dēng", "emoji": "💡", "word": "电灯"}, {"day": 16, "char": "灶", "pinyin": "zào", "emoji": "🔥", "word": "炉灶"}, {"day": 16, "char": "院", "pinyin": "yuàn", "emoji": "🏡", "word": "院子"}, {"day": 16, "char": "路", "pinyin": "lù", "emoji": "🛤️", "word": "小路"}, {"day": 17, "char": "上", "pinyin": "shàng", "emoji": "⬆️", "word": "上面"}, {"day": 17, "char": "下", "pinyin": "xià", "emoji": "⬇️", "word": "下面"}, {"day": 17, "char": "左", "pinyin": "zuǒ", "emoji": "⬅️", "word": "左边"}, {"day": 17, "char": "右", "pinyin": "yòu", "emoji": "➡️", "word": "右边"}, {"day": 17, "char": "前", "pinyin": "qián", "emoji": "⏩", "word": "前面"}, {"day": 17, "char": "后", "pinyin": "hòu", "emoji": "⏪", "word": "后面"}, {"day": 18, "char": "大", "pinyin": "dà", "emoji": "🦕", "word": "很大"}, {"day": 18, "char": "小", "pinyin": "xiǎo", "emoji": "🐜", "word": "很小"}, {"day": 18, "char": "多", "pinyin": "duō", "emoji": "🌟🌟🌟", "word": "很多"}, {"day": 18, "char": "少", "pinyin": "shǎo", "emoji": "🥄", "word": "很少"}, {"day": 18, "char": "高", "pinyin": "gāo", "emoji": "🏔️", "word": "很高"}, {"day": 18, "char": "低", "pinyin": "dī", "emoji": "🪴", "word": "很低"}, {"day": 19, "char": "长", "pinyin": "cháng", "emoji": "🦒", "word": "很长"}, {"day": 19, "char": "短", "pinyin": "duǎn", "emoji": "🦡", "word": "很短"}, {"day": 19, "char": "粗", "pinyin": "cū", "emoji": "🪵", "word": "很粗"}, {"day": 19, "char": "细", "pinyin": "xì", "emoji": "🧵", "word": "很细"}, {"day": 19, "char": "宽", "pinyin": "kuān", "emoji": "🛣️", "word": "很宽"}, {"day": 19, "char": "窄", "pinyin": "zhǎi", "emoji": "🛤️", "word": "很窄"}, {"day": 20, "char": "红", "pinyin": "hóng", "emoji": "🔴", "word": "红色"}, {"day": 20, "char": "黄", "pinyin": "huáng", "emoji": "🟡", "word": "黄色"}, {"day": 20, "char": "蓝", "pinyin": "lán", "emoji": "🔵", "word": "蓝色"}, {"day": 20, "char": "绿", "pinyin": "lǜ", "emoji": "🟢", "word": "绿色"}, {"day": 20, "char": "白", "pinyin": "bái", "emoji": "⚪", "word": "白色"}, {"day": 20, "char": "黑", "pinyin": "hēi", "emoji": "⚫", "word": "黑色"}, {"day": 21, "char": "一", "pinyin": "yī", "emoji": "1️⃣", "word": "一个"}, {"day": 21, "char": "二", "pinyin": "èr", "emoji": "2️⃣", "word": "两个"}, {"day": 21, "char": "三", "pinyin": "sān", "emoji": "3️⃣", "word": "三个"}, {"day": 21, "char": "四", "pinyin": "sì", "emoji": "4️⃣", "word": "四个"}, {"day": 21, "char": "五", "pinyin": "wǔ", "emoji": "5️⃣", "word": "五个"}, {"day": 21, "char": "十", "pinyin": "shí", "emoji": "🔟", "word": "十个"}, {"day": 22, "char": "百", "pinyin": "bǎi", "emoji": "💯", "word": "一百"}, {"day": 22, "char": "千", "pinyin": "qiān", "emoji": "🏷️", "word": "一千"}, {"day": 22, "char": "零", "pinyin": "líng", "emoji": "0️⃣", "word": "零个"}, {"day": 22, "char": "半", "pinyin": "bàn", "emoji": "🩹", "word": "一半"}, {"day": 22, "char": "双", "pinyin": "shuāng", "emoji": "🥾🥾", "word": "一双"}, {"day": 22, "char": "对", "pinyin": "duì", "emoji": "✅", "word": "一对"}, {"day": 23, "char": "春", "pinyin": "chūn", "emoji": "🌱", "word": "春天"}, {"day": 23, "char": "夏", "pinyin": "xià", "emoji": "☀️", "word": "夏天"}, {"day": 23, "char": "秋", "pinyin": "qiū", "emoji": "🍂", "word": "秋天"}, {"day": 23, "char": "冬", "pinyin": "dōng", "emoji": "❄️", "word": "冬天"}, {"day": 23, "char": "晨", "pinyin": "chén", "emoji": "🌅", "word": "早晨"}, {"day": 23, "char": "夕", "pinyin": "xī", "emoji": "🌇", "word": "夕阳"}, {"day": 24, "char": "今", "pinyin": "jīn", "emoji": "📅", "word": "今天"}, {"day": 24, "char": "明", "pinyin": "míng", "emoji": "📆", "word": "明天"}, {"day": 24, "char": "昨", "pinyin": "zuó", "emoji": "🗓️", "word": "昨天"}, {"day": 24, "char": "年", "pinyin": "nián", "emoji": "🎊", "word": "新年"}, {"day": 24, "char": "时", "pinyin": "shí", "emoji": "⏰", "word": "时间"}, {"day": 24, "char": "分", "pinyin": "fēn", "emoji": "⏱️", "word": "分钟"}, {"day": 25, "char": "米", "pinyin": "mǐ", "emoji": "🌾", "word": "大米"}, {"day": 25, "char": "麦", "pinyin": "mài", "emoji": "🌾", "word": "小麦"}, {"day": 25, "char": "豆", "pinyin": "dòu", "emoji": "🫘", "word": "豆子"}, {"day": 25, "char": "瓜", "pinyin": "guā", "emoji": "🍈", "word": "南瓜"}, {"day": 25, "char": "果", "pinyin": "guǒ", "emoji": "🍎", "word": "水果"}, {"day": 25, "char": "菜", "pinyin": "cài", "emoji": "🥬", "word": "蔬菜"}, {"day": 26, "char": "桃", "pinyin": "táo", "emoji": "🍑", "word": "桃子"}, {"day": 26, "char": "梨", "pinyin": "lí", "emoji": "🍐", "word": "梨子"}, {"day": 26, "char": "橘", "pinyin": "jú", "emoji": "🍊", "word": "橘子"}, {"day": 26, "char": "蕉", "pinyin": "jiāo", "emoji": "🍌", "word": "香蕉"}, {"day": 26, "char": "葡", "pinyin": "pú", "emoji": "🍇", "word": "葡萄"}, {"day": 26, "char": "柿", "pinyin": "shì", "emoji": "🍅", "word": "柿子"}, {"day": 27, "char": "衣", "pinyin": "yī", "emoji": "👕", "word": "衣服"}, {"day": 27, "char": "帽", "pinyin": "mào", "emoji": "🧢", "word": "帽子"}, {"day": 27, "char": "鞋", "pinyin": "xié", "emoji": "👟", "word": "鞋子"}, {"day": 27, "char": "袜", "pinyin": "wà", "emoji": "🧦", "word": "袜子"}, {"day": 27, "char": "裙", "pinyin": "qún", "emoji": "👗", "word": "裙子"}, {"day": 27, "char": "领", "pinyin": "lǐng", "emoji": "🧣", "word": "领子"}, {"day": 28, "char": "车", "pinyin": "chē", "emoji": "🚗", "word": "小车"}, {"day": 28, "char": "船", "pinyin": "chuán", "emoji": "🚢", "word": "小船"}, {"day": 28, "char": "飞", "pinyin": "fēi", "emoji": "🛩️", "word": "飞行"}, {"day": 28, "char": "机", "pinyin": "jī", "emoji": "🚀", "word": "飞机"}, {"day": 28, "char": "桥", "pinyin": "qiáo", "emoji": "🌉", "word": "大桥"}, {"day": 28, "char": "站", "pinyin": "zhàn", "emoji": "🚉", "word": "车站"}, {"day": 29, "char": "书", "pinyin": "shū", "emoji": "📖", "word": "看书"}, {"day": 29, "char": "笔", "pinyin": "bǐ", "emoji": "✏️", "word": "铅笔"}, {"day": 29, "char": "纸", "pinyin": "zhǐ", "emoji": "📄", "word": "白纸"}, {"day": 29, "char": "画", "pinyin": "huà", "emoji": "🎨", "word": "画画"}, {"day": 29, "char": "歌", "pinyin": "gē", "emoji": "🎵", "word": "唱歌"}, {"day": 29, "char": "舞", "pinyin": "wǔ", "emoji": "💃", "word": "跳舞"}, {"day": 30, "char": "吃", "pinyin": "chī", "emoji": "🍽️", "word": "吃饭"}, {"day": 30, "char": "喝", "pinyin": "hē", "emoji": "🥤", "word": "喝水"}, {"day": 30, "char": "睡", "pinyin": "shuì", "emoji": "😴", "word": "睡觉"}, {"day": 30, "char": "玩", "pinyin": "wán", "emoji": "🎮", "word": "玩耍"}, {"day": 30, "char": "走", "pinyin": "zǒu", "emoji": "🚶", "word": "走路"}, {"day": 30, "char": "跑", "pinyin": "pǎo", "emoji": "🏃", "word": "跑步"}, {"day": 31, "char": "看", "pinyin": "kàn", "emoji": "👀", "word": "看见"}, {"day": 31, "char": "听", "pinyin": "tīng", "emoji": "👂", "word": "听见"}, {"day": 31, "char": "说", "pinyin": "shuō", "emoji": "🗣️", "word": "说话"}, {"day": 31, "char": "笑", "pinyin": "xiào", "emoji": "😄", "word": "大笑"}, {"day": 31, "char": "哭", "pinyin": "kū", "emoji": "😭", "word": "哭泣"}, {"day": 31, "char": "想", "pinyin": "xiǎng", "emoji": "💭", "word": "想念"}, {"day": 32, "char": "开", "pinyin": "kāi", "emoji": "🔓", "word": "开门"}, {"day": 32, "char": "关", "pinyin": "guān", "emoji": "🔒", "word": "关门"}, {"day": 32, "char": "来", "pinyin": "lái", "emoji": "👉", "word": "过来"}, {"day": 32, "char": "去", "pinyin": "qù", "emoji": "👈", "word": "过去"}, {"day": 32, "char": "进", "pinyin": "jìn", "emoji": "🚪", "word": "进入"}, {"day": 32, "char": "出", "pinyin": "chū", "emoji": "🚶‍♂️", "word": "出去"}, {"day": 33, "char": "坐", "pinyin": "zuò", "emoji": "🧘", "word": "坐下"}, {"day": 33, "char": "立", "pinyin": "lì", "emoji": "🧍", "word": "站立"}, {"day": 33, "char": "举", "pinyin": "jǔ", "emoji": "🏋️", "word": "举手"}, {"day": 33, "char": "拿", "pinyin": "ná", "emoji": "🤲", "word": "拿住"}, {"day": 33, "char": "放", "pinyin": "fàng", "emoji": "📥", "word": "放下"}, {"day": 33, "char": "抱", "pinyin": "bào", "emoji": "🤗", "word": "抱住"}, {"day": 34, "char": "爱", "pinyin": "ài", "emoji": "🥰", "word": "爱心"}, {"day": 34, "char": "好", "pinyin": "hǎo", "emoji": "👍", "word": "很好"}, {"day": 34, "char": "美", "pinyin": "měi", "emoji": "🌺", "word": "美丽"}, {"day": 34, "char": "乐", "pinyin": "lè", "emoji": "😂", "word": "快乐"}, {"day": 34, "char": "友", "pinyin": "yǒu", "emoji": "🤝", "word": "朋友"}, {"day": 34, "char": "恩", "pinyin": "ēn", "emoji": "🙏", "word": "感恩"}];
+const POEMS = [{"day": 1, "title": "咏鹅", "author": "骆宾王", "dynasty": "唐", "difficulty": 1, "content": "鹅，鹅，鹅，\n曲项向天歌。\n白毛浮绿水，\n红掌拨清波。", "explain": "大白鹅啊大白鹅，弯曲着脖子向天空鸣叫。洁白的羽毛浮在绿绿的水面上，红红的脚掌拨动着清清的水波。"}, {"day": 2, "title": "春晓", "author": "孟浩然", "dynasty": "唐", "difficulty": 1, "content": "春眠不觉晓，\n处处闻啼鸟。\n夜来风雨声，\n花落知多少。", "explain": "春天睡觉不知不觉就天亮了，到处都能听到小鸟叽叽喳喳的叫声。昨天夜里又是风又是雨，不知道那些美丽的花儿被吹落了多少呀。"}, {"day": 3, "title": "静夜思", "author": "李白", "dynasty": "唐", "difficulty": 1, "content": "床前明月光，\n疑是地上霜。\n举头望明月，\n低头思故乡。", "explain": "床前洒满了明亮的月光，好像是地上结了一层白白的霜。抬起头看看天上的明月，低下头不禁想念起远方的家乡。"}, {"day": 4, "title": "悯农", "author": "李绅", "dynasty": "唐", "difficulty": 1, "content": "锄禾日当午，\n汗滴禾下土。\n谁知盘中餐，\n粒粒皆辛苦。", "explain": "农民伯伯在正午烈日下给禾苗松土除草，汗水一滴一滴落在泥土里。谁知道我们碗里的饭食，每一粒都是农民伯伯辛苦种出来的呀。"}, {"day": 5, "title": "登鹳雀楼", "author": "王之涣", "dynasty": "唐", "difficulty": 1, "content": "白日依山尽，\n黄河入海流。\n欲穷千里目，\n更上一层楼。", "explain": "太阳沿着远山慢慢落下去了，黄河水奔腾着流向大海。想要看到更远更远的风景，就要再往上爬一层楼。"}, {"day": 6, "title": "咏柳", "author": "贺知章", "dynasty": "唐", "difficulty": 1, "content": "碧玉妆成一树高，\n万条垂下绿丝绦。\n不知细叶谁裁出，\n二月春风似剪刀。", "explain": "高高的柳树好像用碧玉打扮过一样，千万条柳枝垂下来像绿色的丝带。不知道这细细的叶子是谁裁剪出来的？原来是二月的春风像剪刀一样剪出来的呀。"}, {"day": 7, "title": "望庐山瀑布", "author": "李白", "dynasty": "唐", "difficulty": 1, "content": "日照香炉生紫烟，\n遥看瀑布挂前川。\n飞流直下三千尺，\n疑是银河落九天。", "explain": "太阳照在香炉峰上，升起了紫色的烟雾。远远望去，瀑布像一块白布挂在山前。水流飞快地直冲下来好长好长，让人以为是天上的银河掉到了人间。"}, {"day": 8, "title": "绝句", "author": "杜甫", "dynasty": "唐", "difficulty": 1, "content": "两个黄鹂鸣翠柳，\n一行白鹭上青天。\n窗含西岭千秋雪，\n门泊东吴万里船。", "explain": "两只黄鹂鸟在翠绿的柳树上唱歌，一行白鹭鸟飞上了蓝蓝的天空。窗户里能看到西边山上千年不化的积雪，门前停着从远方驶来的船只。"}, {"day": 9, "title": "江雪", "author": "柳宗元", "dynasty": "唐", "difficulty": 1, "content": "千山鸟飞绝，\n万径人踪灭。\n孤舟蓑笠翁，\n独钓寒江雪。", "explain": "所有的山上都没有鸟儿飞了，所有的路上都没有人走的脚印了。只有一只小船上，坐着一个戴着斗笠披着蓑衣的老爷爷，一个人在寒冷的江雪中钓鱼。"}, {"day": 10, "title": "寻隐者不遇", "author": "贾岛", "dynasty": "唐", "difficulty": 1, "content": "松下问童子，\n言师采药去。\n只在此山中，\n云深不知处。", "explain": "我在松树下问小徒弟：你师父去哪里了？他说师父去采药了。师父就在这座山里，可是山上的云雾太浓了，不知道他到底在哪里。"}, {"day": 11, "title": "游子吟", "author": "孟郊", "dynasty": "唐", "difficulty": 2, "content": "慈母手中线，\n游子身上衣。\n临行密密缝，\n意恐迟迟归。\n谁言寸草心，\n报得三春晖。", "explain": "妈妈手里拿着针线，给要出远门的孩子缝衣服。临走时缝了一针又一针，怕孩子回來得太晚了。就像小草的嫩心，怎么能报答得了春天阳光般的母爱呢？"}, {"day": 12, "title": "赋得古原草送别", "author": "白居易", "dynasty": "唐", "difficulty": 2, "content": "离离原上草，\n一岁一枯荣。\n野火烧不尽，\n春风吹又生。\n远芳侵古道，\n晴翠接荒城。\n又送王孙去，\n萋萋满别情。", "explain": "原野上的草长得很茂盛，每年枯萎一次又繁茂一次。野火怎么烧也烧不完，春风一吹又长出来了。远处的草漫到了古老的道路上，阳光下绿油油的连着荒凉的城。今天又要送好朋友离开了，满心的不舍得。"}, {"day": 13, "title": "小池", "author": "杨万里", "dynasty": "宋", "difficulty": 1, "content": "泉眼无声惜细流，\n树阴照水爱晴柔。\n小荷才露尖尖角，\n早有蜻蜓立上头。", "explain": "泉水静静地流着，好像舍不得让水流走。树荫映在水中，好像很喜欢这晴天柔和的风光。小荷叶才露出尖尖的小角，蜻蜓就已经飞来停在上面了。"}, {"day": 14, "title": "池上", "author": "白居易", "dynasty": "唐", "difficulty": 1, "content": "小娃撑小艇，\n偷采白莲回。\n不解藏踪迹，\n浮萍一道开。", "explain": "一个小娃娃划着小船，偷偷地采了白莲花回来。他不知道要藏好自己的脚印，小船划过，水面上浮萍被分开了一条长长的路。"}, {"day": 15, "title": "鹿柴", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "空山不见人，\n但闻人语响。\n返景入深林，\n复照青苔上。", "explain": "空空的大山里看不见一个人影，只听到有人说话的声音。夕阳的余光照进了深深的树林里，又照在了绿绿的青苔上。"}, {"day": 16, "title": "送别", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "山中相送罢，\n日暮掩柴扉。\n春草明年绿，\n王孙归不归。", "explain": "在山中送走了好朋友，天黑了关上了柴门。明年的春天草还会再绿，可是好朋友你还会不会回来呢？"}, {"day": 17, "title": "相思", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "红豆生南国，\n春来发几枝。\n愿君多采撷，\n此物最相思。", "explain": "红豆生长在南方，春天来了会发出多少新枝条呢？希望你多采一些，因为红豆最能代表想念别人的心意。"}, {"day": 18, "title": "杂诗", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "君自故乡来，\n应知故乡事。\n来日绮窗前，\n寒梅著花未。", "explain": "你从我的家乡过来，应该知道家乡的事情吧。你来的时候，我那扇雕花窗前的梅花，有没有开花呢？"}, {"day": 19, "title": "八阵图", "author": "杜甫", "dynasty": "唐", "difficulty": 1, "content": "功盖三分国，\n名成八阵图。\n江流石不转，\n遗恨失吞吴。", "explain": "诸葛亮的功劳盖过了三国时代的所有人，他的名字也因为八阵图传扬开来。江水哗哗地流，八阵图的石头却不会转动，只留下没能吞并东吴的遗憾。"}, {"day": 20, "title": "竹里馆", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "独坐幽篁里，\n弹琴复长啸。\n深林人不知，\n明月来相照。", "explain": "一个人坐在幽深的竹林里，弹着琴又放声歌唱。深深的树林里没有人知道我在这里，只有明月来陪伴我、照耀我。"}, {"day": 21, "title": "鸟鸣涧", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "人闲桂花落，\n夜静春山空。\n月出惊山鸟，\n时鸣春涧中。", "explain": "人安静下来的时候，能看到桂花轻轻飘落。夜里很静，春天的山里空空的。月亮升起来，惊动了山里的鸟儿，鸟儿时不时在春天的山涧里叫几声。"}, {"day": 22, "title": "山中送别", "author": "王维", "dynasty": "唐", "difficulty": 1, "content": "山中相送罢，\n日暮掩柴扉。\n春草明年绿，\n王孙归不归。", "explain": "在山里送走了好朋友，太阳下山了，轻轻关上柴门。明年春天草还会再变绿，不知道好朋友你还会不会回来呢？"}, {"day": 23, "title": "问刘十九", "author": "白居易", "dynasty": "唐", "difficulty": 1, "content": "绿蚁新醅酒，\n红泥小火炉。\n晚来天欲雪，\n能饮一杯无。", "explain": "新酿好的酒上浮着绿色的小泡泡，红泥做的小火炉烧得暖暖的。天晚了好像要下雪了，朋友，要不要来喝一杯呢？"}, {"day": 24, "title": "逢雪宿芙蓉山主人", "author": "刘长卿", "dynasty": "唐", "difficulty": 1, "content": "日暮苍山远，\n天寒白屋贫。\n柴门闻犬吠，\n风雪夜归人。", "explain": "太阳下山了，远处的山看上去灰蒙蒙的。天气好冷啊，这户人家的小屋简朴又清贫。柴门那边传来小狗汪汪叫，原来是有人在风雪天赶路回来了。"}, {"day": 25, "title": "江上渔者", "author": "范仲淹", "dynasty": "宋", "difficulty": 1, "content": "江上往来人，\n但爱鲈鱼美。\n君看一叶舟，\n出没风波里。", "explain": "江上来来往往的人，只知道鲈鱼好吃。你看看那只像树叶一样的小船，在风浪里一会儿出来一会儿不见，打鱼的人多危险呀。"}, {"day": 26, "title": "蚕妇", "author": "张俞", "dynasty": "宋", "difficulty": 1, "content": "昨日入城市，\n归来泪满巾。\n遍身罗绮者，\n不是养蚕人。", "explain": "昨天进城去卖丝绸，回来的时候眼泪湿透了手巾。因为看到全身上下穿着漂亮丝绸的人，并不是辛辛苦苦养蚕的人。"}, {"day": 27, "title": "陶者", "author": "梅尧臣", "dynasty": "宋", "difficulty": 1, "content": "陶尽门前土，\n屋上无片瓦。\n十指不沾泥，\n鳞鳞大厦居。", "explain": "烧瓦的人把门前的土都挖完了，自己家的屋顶上却连一片瓦都没有。那些十个手指头不沾一点泥的人，却住在瓦片像鱼鳞一样漂亮的大房子里。"}, {"day": 28, "title": "梅花", "author": "王安石", "dynasty": "宋", "difficulty": 1, "content": "墙角数枝梅，\n凌寒独自开。\n遥知不是雪，\n为有暗香来。", "explain": "墙角里有几枝梅花，在寒冷的冬天里自己悄悄地开了。远远望去好像不是雪，因为有淡淡的清香飘过来。"}, {"day": 29, "title": "画鸡", "author": "唐寅", "dynasty": "明", "difficulty": 1, "content": "头上红冠不用裁，\n满身雪白走将来。\n平生不敢轻言语，\n一叫千门万户开。", "explain": "头上红色的鸡冠不用剪裁，身上雪白的羽毛，大步走来。大公鸡平时不敢随便说话，可是它一叫起来，千家万户的门就都打开了。"}, {"day": 30, "title": "村居", "author": "高鼎", "dynasty": "清", "difficulty": 1, "content": "草长莺飞二月天，\n拂堤杨柳醉春烟。\n儿童散学归来早，\n忙趁东风放纸鸢。", "explain": "二月里草长长了，黄莺飞来飞去，柳枝轻轻拂着堤岸，春天的烟雾让人陶醉。小孩子们放学回来得早，赶紧趁着东风放起了风筝。"}, {"day": 31, "title": "所见", "author": "袁枚", "dynasty": "清", "difficulty": 1, "content": "牧童骑黄牛，\n歌声振林樾。\n意欲捕鸣蝉，\n忽然闭口立。", "explain": "一个放牛的小孩骑着黄牛，唱的歌在树林里回荡。他忽然想抓正在叫的知了，就赶紧闭上嘴巴，站在那里不动了。"}, {"day": 32, "title": "山行", "author": "杜牧", "dynasty": "唐", "difficulty": 1, "content": "远上寒山石径斜，\n白云生处有人家。\n停车坐爱枫林晚，\n霜叶红于二月花。", "explain": "弯弯曲曲的石头小路通向远远的秋山，白云升起的地方好像有人住。停下车来，是因为太喜欢傍晚的枫树林了，被霜打过的枫叶比二月的花还要红！"}, {"day": 33, "title": "清明", "author": "杜牧", "dynasty": "唐", "difficulty": 1, "content": "清明时节雨纷纷，\n路上行人欲断魂。\n借问酒家何处有，\n牧童遥指杏花村。", "explain": "清明节的时候下着纷纷细雨，路上的人伤心得好像丢了魂。问问哪里有卖酒的酒馆呀，放牛的小孩远远指着开满杏花的村子。"}, {"day": 34, "title": "江南春", "author": "杜牧", "dynasty": "唐", "difficulty": 2, "content": "千里莺啼绿映红，\n水村山郭酒旗风。\n南朝四百八十寺，\n多少楼台烟雨中。", "explain": "千里江南到处黄莺唱歌，绿叶映着红花。水边的村子、山脚的城墙边，酒店的旗子在风里飘。南朝留下了好多好多寺庙，无数的楼台都笼罩在蒙蒙的烟雨里。"}];
+const PINYIN = [{"category": "声母", "items": [{"pinyin": "b", "emoji": "📻", "example": "波"}, {"pinyin": "p", "emoji": "🍑", "example": "坡"}, {"pinyin": "m", "emoji": "🐴", "example": "摸"}, {"pinyin": "f", "emoji": "🪁", "example": "佛"}, {"pinyin": "d", "emoji": "🥁", "example": "得"}, {"pinyin": "t", "emoji": "🐰", "example": "特"}, {"pinyin": "n", "emoji": "👃", "example": "呢"}, {"pinyin": "l", "emoji": "🦁", "example": "乐"}, {"pinyin": "g", "emoji": "🕊️", "example": "哥"}, {"pinyin": "k", "emoji": "🪑", "example": "科"}, {"pinyin": "h", "emoji": "🐯", "example": "喝"}, {"pinyin": "j", "emoji": "🐔", "example": "鸡"}, {"pinyin": "q", "emoji": "🎈", "example": "七"}, {"pinyin": "x", "emoji": "🍉", "example": "西"}, {"pinyin": "zh", "emoji": "🕷️", "example": "知"}, {"pinyin": "ch", "emoji": "🍽️", "example": "吃"}, {"pinyin": "sh", "emoji": "🦁", "example": "师"}, {"pinyin": "r", "emoji": "🌞", "example": "日"}, {"pinyin": "z", "emoji": "🦓", "example": "资"}, {"pinyin": "c", "emoji": "🌿", "example": "刺"}, {"pinyin": "s", "emoji": "🐍", "example": "丝"}, {"pinyin": "y", "emoji": "🦆", "example": "衣"}, {"pinyin": "w", "emoji": "🐸", "example": "乌"}]}, {"category": "单韵母", "items": [{"pinyin": "a", "emoji": "🦷", "example": "啊"}, {"pinyin": "o", "emoji": "🐓", "example": "哦"}, {"pinyin": "e", "emoji": "🦢", "example": "鹅"}, {"pinyin": "i", "emoji": "👗", "example": "衣"}, {"pinyin": "u", "emoji": "🏠", "example": "乌"}, {"pinyin": "ü", "emoji": "🐟", "example": "鱼"}]}, {"category": "复韵母", "items": [{"pinyin": "ai", "emoji": "❤️", "example": "爱"}, {"pinyin": "ei", "emoji": "🪓", "example": "诶"}, {"pinyin": "ui", "emoji": "🌻", "example": "威"}, {"pinyin": "ao", "emoji": "🧥", "example": "袄"}, {"pinyin": "ou", "emoji": "🐦", "example": "欧"}, {"pinyin": "iu", "emoji": "🐮", "example": "牛"}, {"pinyin": "ie", "emoji": "🍃", "example": "叶"}, {"pinyin": "üe", "emoji": "🌙", "example": "月"}, {"pinyin": "er", "emoji": "👂", "example": "耳"}]}, {"category": "前鼻韵母", "items": [{"pinyin": "an", "emoji": "🔘", "example": "安"}, {"pinyin": "en", "emoji": "🔔", "example": "恩"}, {"pinyin": "in", "emoji": "🎵", "example": "音"}, {"pinyin": "un", "emoji": "🦟", "example": "温"}, {"pinyin": "ün", "emoji": "☁️", "example": "云"}]}, {"category": "后鼻韵母", "items": [{"pinyin": "ang", "emoji": "💪", "example": "昂"}, {"pinyin": "eng", "emoji": "🦅", "example": "哼"}, {"pinyin": "ing", "emoji": "🦉", "example": "英"}, {"pinyin": "ong", "emoji": "👴", "example": "翁"}]}, {"category": "整体认读音节", "items": [{"pinyin": "zhi", "emoji": "🧻", "example": "织"}, {"pinyin": "chi", "emoji": "🍚", "example": "吃"}, {"pinyin": "shi", "emoji": "🪨", "example": "石"}, {"pinyin": "ri", "emoji": "☀️", "example": "日"}, {"pinyin": "zi", "emoji": "✏️", "example": "字"}, {"pinyin": "ci", "emoji": "🏺", "example": "词"}, {"pinyin": "si", "emoji": "🧵", "example": "四"}, {"pinyin": "yi", "emoji": "🪑", "example": "一"}, {"pinyin": "wu", "emoji": "💃", "example": "五"}, {"pinyin": "yu", "emoji": "🌧️", "example": "雨"}, {"pinyin": "ye", "emoji": "🌴", "example": "夜"}, {"pinyin": "yue", "emoji": "🎵", "example": "乐"}, {"pinyin": "yuan", "emoji": "⭕", "example": "圆"}, {"pinyin": "yin", "emoji": "🎤", "example": "音"}, {"pinyin": "yun", "emoji": "☁️", "example": "云"}, {"pinyin": "ying", "emoji": "🦅", "example": "鹰"}]}];
+const ENGLISH = [{"category": "数字", "items": [{"word": "one", "emoji": "1️⃣", "cn": "一"}, {"word": "two", "emoji": "2️⃣", "cn": "二"}, {"word": "three", "emoji": "3️⃣", "cn": "三"}, {"word": "four", "emoji": "4️⃣", "cn": "四"}, {"word": "five", "emoji": "5️⃣", "cn": "五"}, {"word": "six", "emoji": "6️⃣", "cn": "六"}, {"word": "seven", "emoji": "7️⃣", "cn": "七"}, {"word": "eight", "emoji": "8️⃣", "cn": "八"}, {"word": "nine", "emoji": "9️⃣", "cn": "九"}, {"word": "ten", "emoji": "🔟", "cn": "十"}]}, {"category": "家人", "items": [{"word": "father", "emoji": "👨", "cn": "爸爸"}, {"word": "mother", "emoji": "👩", "cn": "妈妈"}, {"word": "brother", "emoji": "👦", "cn": "哥哥/弟弟"}, {"word": "sister", "emoji": "👧", "cn": "姐姐/妹妹"}, {"word": "grandfather", "emoji": "👴", "cn": "爷爷/外公"}, {"word": "grandmother", "emoji": "👵", "cn": "奶奶/外婆"}]}, {"category": "人称", "items": [{"word": "I", "emoji": "🙋", "cn": "我"}, {"word": "you", "emoji": "👉", "cn": "你"}, {"word": "he", "emoji": "👨", "cn": "他"}, {"word": "she", "emoji": "👩", "cn": "她"}, {"word": "we", "emoji": "👫", "cn": "我们"}, {"word": "they", "emoji": "👨‍👩‍👧‍👦", "cn": "他们"}]}, {"category": "礼貌问候", "items": [{"word": "hello", "emoji": "👋", "cn": "你好"}, {"word": "goodbye", "emoji": "👋", "cn": "再见"}, {"word": "thanks", "emoji": "🙏", "cn": "谢谢"}, {"word": "sorry", "emoji": "😔", "cn": "对不起"}, {"word": "please", "emoji": "🥺", "cn": "请"}]}, {"category": "身体部位", "items": [{"word": "head", "emoji": "🗣️", "cn": "头"}, {"word": "eye", "emoji": "👁️", "cn": "眼睛"}, {"word": "ear", "emoji": "👂", "cn": "耳朵"}, {"word": "nose", "emoji": "👃", "cn": "鼻子"}, {"word": "mouth", "emoji": "👄", "cn": "嘴巴"}, {"word": "hand", "emoji": "✋", "cn": "手"}, {"word": "foot", "emoji": "🦶", "cn": "脚"}]}, {"category": "水果", "items": [{"word": "apple", "emoji": "🍎", "cn": "苹果"}, {"word": "banana", "emoji": "🍌", "cn": "香蕉"}, {"word": "orange", "emoji": "🍊", "cn": "橙子"}, {"word": "grape", "emoji": "🍇", "cn": "葡萄"}, {"word": "pear", "emoji": "🍐", "cn": "梨"}, {"word": "watermelon", "emoji": "🍉", "cn": "西瓜"}]}, {"category": "主食日常食物", "items": [{"word": "rice", "emoji": "🍚", "cn": "米饭"}, {"word": "bread", "emoji": "🍞", "cn": "面包"}, {"word": "noodle", "emoji": "🍜", "cn": "面条"}, {"word": "egg", "emoji": "🥚", "cn": "鸡蛋"}, {"word": "milk", "emoji": "🥛", "cn": "牛奶"}]}, {"category": "零食甜品", "items": [{"word": "cake", "emoji": "🎂", "cn": "蛋糕"}, {"word": "icecream", "emoji": "🍦", "cn": "冰淇淋"}, {"word": "candy", "emoji": "🍬", "cn": "糖果"}, {"word": "cookie", "emoji": "🍪", "cn": "饼干"}]}, {"category": "动物", "items": [{"word": "cat", "emoji": "🐱", "cn": "猫"}, {"word": "dog", "emoji": "🐶", "cn": "狗"}, {"word": "bird", "emoji": "🐦", "cn": "鸟"}, {"word": "fish", "emoji": "🐟", "cn": "鱼"}, {"word": "rabbit", "emoji": "🐰", "cn": "兔子"}, {"word": "monkey", "emoji": "🐵", "cn": "猴子"}]}, {"category": "日常物品", "items": [{"word": "book", "emoji": "📖", "cn": "书"}, {"word": "pen", "emoji": "🖊️", "cn": "笔"}, {"word": "desk", "emoji": "🪑", "cn": "书桌"}, {"word": "chair", "emoji": "🪑", "cn": "椅子"}, {"word": "cup", "emoji": "🥤", "cn": "杯子"}]}, {"category": "基础形容词", "items": [{"word": "big", "emoji": "🐘", "cn": "大"}, {"word": "small", "emoji": "🐭", "cn": "小"}, {"word": "happy", "emoji": "😊", "cn": "开心"}, {"word": "sad", "emoji": "😢", "cn": "伤心"}, {"word": "hot", "emoji": "🔥", "cn": "热"}, {"word": "cold", "emoji": "❄️", "cn": "冷"}]}, {"category": "常用动词", "items": [{"word": "run", "emoji": "🏃", "cn": "跑"}, {"word": "jump", "emoji": "🦘", "cn": "跳"}, {"word": "eat", "emoji": "🍽️", "cn": "吃"}, {"word": "sleep", "emoji": "😴", "cn": "睡觉"}, {"word": "play", "emoji": "⚽", "cn": "玩"}, {"word": "read", "emoji": "📚", "cn": "读"}]}];
+const BOOKS = [{"cat": "经典绘本", "title": "好饿的毛毛虫", "author": "艾瑞·卡尔", "cover": "🐛", "desc": "一条毛毛虫从星期一吃到星期日，最后变成美丽蝴蝶"}, {"cat": "经典绘本", "title": "我爸爸", "author": "安东尼·布朗", "cover": "👨", "desc": "用孩子视角描绘无所不能的爸爸"}, {"cat": "经典绘本", "title": "丑小鸭", "author": "安徒生", "cover": "🦢", "desc": "一只被欺负的丑小鸭最终成长为白天鹅"}, {"cat": "经典绘本", "title": "猜猜我有多爱你", "author": "山姆·麦克布雷尼", "cover": "🐰", "desc": "大小兔子比谁更爱对方的温馨故事"}, {"cat": "经典绘本", "title": "爷爷一定有办法", "author": "菲比·吉尔曼", "cover": "🧥", "desc": "爷爷把旧毯子变成各种有用的东西"}, {"cat": "经典绘本", "title": "逃家小兔", "author": "玛格丽特·怀兹·布朗", "cover": "🐇", "desc": "小兔想逃跑，妈妈总会找到他"}, {"cat": "情感故事", "title": "我妈妈", "author": "安东尼·布朗", "cover": "👩", "desc": "讲述孩子心中棒棒的妈妈"}, {"cat": "情感故事", "title": "抱抱", "author": "杰兹·阿波罗", "cover": "🤗", "desc": "小猩猩找妈妈要抱抱的暖心故事"}, {"cat": "情感故事", "title": "大卫不可以", "author": "大卫·香农", "cover": "🙅", "desc": "调皮大卫总被说不行，但妈妈依然爱他"}, {"cat": "情感故事", "title": "我喜欢自己", "author": "南希·卡尔森", "cover": "🐷", "desc": "小猪学会接纳和喜欢自己"}, {"cat": "科普认知", "title": "好玩的骨头", "author": "五味太郎", "cover": "🦴", "desc": "认识身体里的骨头"}, {"cat": "科普认知", "title": "蚂蚁和西瓜", "author": "田村茂", "cover": "🐜", "desc": "蚂蚁合作搬运大西瓜的有趣故事"}, {"cat": "科普认知", "title": "第一次发现·恐龙", "author": "伽利玛", "cover": "🦕", "desc": "透明胶片书探索恐龙世界"}, {"cat": "科普认知", "title": "下雨了", "author": "汤姆牛", "cover": "🌧️", "desc": "认识雨水和自然循环"}, {"cat": "习惯养成", "title": "大卫去上学", "author": "大卫·香农", "cover": "🎒", "desc": "大卫在学校学会遵守规则"}, {"cat": "习惯养成", "title": "牙齿大街的新鲜事", "author": "安娜·鲁斯曼", "cover": "🦷", "desc": "认识刷牙重要性，赶走蛀牙菌"}, {"cat": "习惯养成", "title": "肚子里有个火车站", "author": "安娜·鲁斯曼", "cover": "🚂", "desc": "认识消化系统，养成好好吃饭习惯"}, {"cat": "习惯养成", "title": "不睡觉世界冠军", "author": "西恩·泰勒", "cover": "😴", "desc": "各种动物比谁不睡觉的睡前故事"}, {"cat": "趣味故事", "title": "月亮的味道", "author": "麦克·格雷涅茨", "cover": "🌙", "desc": "动物们叠高高想尝尝月亮的味道"}, {"cat": "趣味故事", "title": "点点点", "author": "埃尔维·杜莱", "cover": "🔴", "desc": "按下点点会变色的互动游戏书"}, {"cat": "趣味故事", "title": "是谁嗯嗯在我头上", "author": "维尔纳·霍尔茨瓦特", "cover": "💩", "desc": "小鼹鼠找谁拉便便在它头上"}, {"cat": "趣味故事", "title": "母鸡萝丝去散步", "author": "佩特·哈群斯", "cover": "🐔", "desc": "母鸡散步时狐狸总倒霉的搞笑故事"}];
+const POEM_DAYS = 34;
+const CHAR_DAYS = 34;
+
+/* ===== 汐汐学习工作台 · 主逻辑 ===== */
+
+/* ---------- 导航定义 ---------- */
+const NAV = [
+  {id:'chars',  ico:'📖',lbl:'识字'},
+  {id:'poems',  ico:'📜',lbl:'古诗'},
+  {id:'books',  ico:'📚',lbl:'绘本'},
+  {id:'pinyin', ico:'🔤',lbl:'拼音'},
+  {id:'english',ico:'🌍',lbl:'英语'},
+  {id:'math',   ico:'🔢',lbl:'算术'},
+  {id:'mind',   ico:'🧠',lbl:'思维'},
+  {id:'tasks',  ico:'📋',lbl:'任务'},
+  {id:'rewards',ico:'🎁',lbl:'奖励'},
+  {id:'calendar',ico:'📅',lbl:'日历'},
+];
+
+/* ---------- 状态 ---------- */
+let S = loadState();
+function loadState(){
+  try{
+    const s = JSON.parse(localStorage.getItem('xx_state'));
+    if(s) return Object.assign(defaultState(), s);
+  }catch(e){}
+  return defaultState();
+}
+function defaultState(){
+  return {
+    learnedChars:[],      // 已学汉字 char 字符串
+    poemRead:[],          // 已读古诗 day
+    mathRight:0, mathWrong:0, mathStreak:0,
+    mindPlayed:[],        // 已玩思维游戏
+    tasks:{},             // taskKey: true  每日任务
+    taskDate:'',          // 任务日期
+    totalSun:0,           // 累计太阳
+    learnDays:[],         // 学习日期 yyyy-mm-dd
+    calY:new Date().getFullYear(),
+    calM:new Date().getMonth(),
+    charDay:1, poemDay:1, bookCat:'全部', pinyinCat:'全部', engCat:'全部', mathType:'mix',
+  };
+}
+function save(){ localStorage.setItem('xx_state', JSON.stringify(S)); }
+
+/* ---------- 工具 ---------- */
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(window._tt);window._tt=setTimeout(()=>t.classList.remove('show'),2200)}
+function $(id){return document.getElementById(id)}
+function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
+
+/* ---------- 语音 ---------- */
+function speak(text, lang){
+  if(!('speechSynthesis' in window)){toast('浏览器不支持语音');return}
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = lang || 'zh-CN';
+  u.rate = 0.8; u.pitch = 1.1;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- 导航渲染 ---------- */
+function renderNav(){
+  const sb = $('sidebar');
+  sb.innerHTML = '';
+  NAV.forEach(n=>{
+    const d = el('div','nav-item'+(location.hash==='#'+n.id?' active':''),
+      '<span class="ico">'+n.ico+'</span><span class="lbl">'+n.lbl+'</span>');
+    d.onclick = ()=>goSection(n.id);
+    sb.appendChild(d);
+  });
+}
+function goSection(id){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  $('sec-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach((n,i)=>{
+    n.classList.toggle('active', NAV[i].id===id);
+  });
+  // 顶部今日学习/收藏跳转
+  document.querySelectorAll('.top-tab').forEach(t=>t.classList.remove('active'));
+  if(id==='tasks') document.querySelector('.top-tab[data-jump="tasks"]').classList.add('active');
+  if(id==='rewards') document.querySelector('.top-tab[data-jump="rewards"]').classList.add('active');
+  location.hash = id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ---------- 识字模块 ---------- */
+function renderCharTabs(){
+  const box = $('charTabs');
+  box.innerHTML = '';
+  const all = el('div','tab'+(S.charDay===0?' active':''),'全部');
+  all.onclick = ()=>{S.charDay=0;renderChars();renderCharTabs();save()};
+  box.appendChild(all);
+  for(let d=1;d<=CHAR_DAYS;d++){
+    const t = el('div','tab'+(S.charDay===d?' active':''),'第'+d+'天');
+    t.onclick = ()=>{S.charDay=d;renderChars();renderCharTabs();save()};
+    box.appendChild(t);
+  }
+}
+function renderChars(){
+  const grid = $('charGrid');
+  grid.innerHTML = '';
+  let list = CHARS;
+  if(S.charDay>0) list = CHARS.filter(c=>c.day===S.charDay);
+  list.forEach(c=>{
+    const learned = S.learnedChars.includes(c.char);
+    const card = el('div','char-card'+(learned?' learned':''));
+    card.innerHTML = `
+      <div class="check">✓</div>
+      <div class="emoji">${c.emoji}</div>
+      <div class="hanzi">${c.char}</div>
+      <div class="pinyin">${c.pinyin}</div>
+      <div class="word">${c.word}</div>`;
+    card.onclick = ()=>{
+      speak(c.char+'，'+c.word);
+      if(!learned){
+        S.learnedChars.push(c.char);
+        save(); renderChars(); renderAch();
+        toast('🎉 学会「'+c.char+'」！');
+        checkLearnToday();
+      }
+    };
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- 古诗模块 ---------- */
+function renderPoemTabs(){
+  const box = $('poemTabs');
+  box.innerHTML = '';
+  for(let d=1;d<=POEM_DAYS;d++){
+    const t = el('div','tab'+(S.poemDay===d?' active':''),'第'+d+'天');
+    t.onclick = ()=>{S.poemDay=d;renderPoem();renderPoemTabs();save()};
+    box.appendChild(t);
+  }
+}
+function renderPoem(){
+  const p = POEMS.find(x=>x.day===S.poemDay);
+  if(!p) return;
+  const read = S.poemRead.includes(p.day);
+  $('poemBox').innerHTML = `
+    <div class="poem-card">
+      <div class="poem-head">
+        <span class="poem-title">${p.title}</span>
+        <span class="poem-author">${p.dynasty}·${p.author}</span>
+        <span class="diff-tag diff-${p.difficulty}">难度${p.difficulty}</span>
+        ${read?'<span class="diff-tag diff-1">已读✓</span>':''}
+      </div>
+      <div class="poem-content">${p.content}</div>
+      <div class="poem-explain">💬 ${p.explain}</div>
+      <button class="btn-speak" onclick="speakPoem(${p.day})">🔊 听朗读</button>
+    </div>`;
+}
+function speakPoem(day){
+  const p = POEMS.find(x=>x.day===day);
+  speak(p.content.replace(/\n/g,'，'));
+  if(!S.poemRead.includes(day)){
+    S.poemRead.push(day);
+    save(); renderPoem(); renderAch();
+    toast('📜 古诗已读！');
+    checkLearnToday();
+  }
+}
+
+/* ---------- 绘本模块 ---------- */
+function renderBookTabs(){
+  const cats = ['全部','经典绘本','情感故事','科普认知','习惯养成','趣味故事'];
+  const box = $('bookTabs');
+  box.innerHTML = '';
+  cats.forEach(c=>{
+    const t = el('div','tab'+(S.bookCat===c?' active':''),c);
+    t.onclick = ()=>{S.bookCat=c;renderBooks();renderBookTabs();save()};
+    box.appendChild(t);
+  });
+}
+function renderBooks(){
+  // 每日推荐
+  const dayIdx = (new Date().getDate()) % BOOKS.length;
+  const rec = BOOKS[dayIdx];
+  $('bookRecommend').innerHTML = `
+    <div class="book-recommend">
+      <div class="cover">${rec.cover}</div>
+      <div class="info">
+        <h3>${rec.title}</h3>
+        <div class="author">✍️ ${rec.author}</div>
+        <div class="desc">${rec.desc}</div>
+      </div>
+      <button class="btn-read" onclick="toast('📖 开始阅读：'+${JSON.stringify(rec.title)})">开始阅读</button>
+    </div>`;
+  // 绘本库
+  const grid = $('bookGrid');
+  grid.innerHTML = '';
+  let list = BOOKS;
+  if(S.bookCat!=='全部') list = BOOKS.filter(b=>b.cat===S.bookCat);
+  list.forEach(b=>{
+    const d = el('div','book-item');
+    d.innerHTML = `<div class="cover">${b.cover}</div><div class="name">${b.title}</div>`;
+    d.onclick = ()=>toast('📖 '+b.title+' — '+b.desc);
+    grid.appendChild(d);
+  });
+}
+
+/* ---------- 拼音模块 ---------- */
+function renderPinyinTabs(){
+  const cats = ['全部'].concat(PINYIN.map(x=>x.category));
+  const box = $('pinyinTabs');
+  box.innerHTML = '';
+  cats.forEach(c=>{
+    const t = el('div','tab'+(S.pinyinCat===c?' active':''),c);
+    t.onclick = ()=>{S.pinyinCat=c;renderPinyin();renderPinyinTabs();save()};
+    box.appendChild(t);
+  });
+}
+function renderPinyin(){
+  const grid = $('pinyinGrid');
+  grid.innerHTML = '';
+  let list = [];
+  if(S.pinyinCat==='全部') PINYIN.forEach(g=>list=list.concat(g.items));
+  else list = (PINYIN.find(g=>g.category===S.pinyinCat)||{items:[]}).items;
+  list.forEach(p=>{
+    const card = el('div','pinyin-card');
+    card.innerHTML = `<div class="py">${p.pinyin}</div><div class="emo">${p.emoji}</div><div class="ex">${p.example}</div>`;
+    card.onclick = ()=>speak(p.pinyin+'，'+p.example);
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- 英语模块 ---------- */
+function renderEngTabs(){
+  const cats = ['全部'].concat(ENGLISH.map(x=>x.category));
+  const box = $('engTabs');
+  box.innerHTML = '';
+  cats.forEach(c=>{
+    const t = el('div','tab'+(S.engCat===c?' active':''),c);
+    t.onclick = ()=>{S.engCat=c;renderEnglish();renderEngTabs();save()};
+    box.appendChild(t);
+  });
+}
+function renderEnglish(){
+  const grid = $('engGrid');
+  grid.innerHTML = '';
+  let list = [];
+  if(S.engCat==='全部') ENGLISH.forEach(g=>list=list.concat(g.items));
+  else list = (ENGLISH.find(g=>g.category===S.engCat)||{items:[]}).items;
+  list.forEach(w=>{
+    const card = el('div','eng-card');
+    card.innerHTML = `<div class="emo">${w.emoji}</div><div class="word">${w.word}</div><div class="cn">${w.cn}</div>
+      <button class="speak">🔊 点我听读音</button>`;
+    card.querySelector('.speak').onclick = (e)=>{e.stopPropagation();speak(w.word,'en-US')};
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- 算术模块 ---------- */
+let mathCur = null;
+function genMath(){
+  const type = S.mathType;
+  let a,b,op,ans;
+  if(type==='add'){op='+';a=rand(0,10);b=rand(0,10-a);ans=a+b}
+  else if(type==='sub'){op='-';a=rand(0,10);b=rand(0,a);ans=a-b}
+  else{if(Math.random()<.5){op='+';a=rand(0,10);b=rand(0,10-a);ans=a+b}else{op='-';a=rand(0,10);b=rand(0,a);ans=a-b}}
+  // 生成4个选项
+  const opts = new Set([ans]);
+  while(opts.size<4){opts.add(rand(0,10))}
+  const optArr = Array.from(opts).sort(()=>Math.random()-.5);
+  mathCur = {a,b,op,ans,opts:optArr};
+  renderMath();
+}
+function rand(a,b){return Math.floor(Math.random()*(b-a+1))+a}
+function renderMath(){
+  $('mathQ').textContent = mathCur.a+' '+mathCur.op+' '+mathCur.b+' = ?';
+  const box = $('mathOpts');
+  box.innerHTML = '';
+  mathCur.opts.forEach(o=>{
+    const b = el('div','math-opt',o);
+    b.onclick = ()=>answerMath(o,b);
+    box.appendChild(b);
+  });
+  $('mathStats').innerHTML = `
+    <div class="math-stat"><div class="v">${S.mathRight}</div><div class="l">✅ 答对</div></div>
+    <div class="math-stat"><div class="v">${S.mathWrong}</div><div class="l">❌ 答错</div></div>
+    <div class="math-stat"><div class="v">${S.mathRight+S.mathWrong>0?Math.round(S.mathRight/(S.mathRight+S.mathWrong)*100):0}%</div><div class="l">📊 正确率</div></div>
+    <div class="math-stat"><div class="v">${S.mathStreak}</div><div class="l">🔥 连对</div></div>`;
+}
+function answerMath(opt,btn){
+  if(btn.classList.contains('correct')||btn.classList.contains('wrong'))return;
+  if(opt===mathCur.ans){
+    btn.classList.add('correct');
+    S.mathRight++; S.mathStreak++;
+    toast('✅ 答对了！太棒了！');
+  }else{
+    btn.classList.add('wrong');
+    // 标出正确答案
+    document.querySelectorAll('.math-opt').forEach(b=>{if(parseInt(b.textContent)===mathCur.ans)b.classList.add('correct')});
+    S.mathWrong++; S.mathStreak=0;
+    toast('❌ 再想想，正确答案是 '+mathCur.ans);
+  }
+  save(); renderMath(); renderAch();
+  checkLearnToday();
+}
+function nextMath(){genMath()}
+
+/* ---------- 思维游戏 ---------- */
+const MIND_GAMES = [
+  {id:'memory',ico:'🃏',name:'记忆翻牌',desc:'找出相同的两张牌'},
+  {id:'sequence',ico:'🔢',name:'数字顺序',desc:'按从小到大点击数字'},
+  {id:'finddiff',ico:'🔍',name:'找不同',desc:'找出不一样的那个'},
+  {id:'shadow',ico:'🌑',name:'影子配对',desc:'找出图形的影子'},
+  {id:'sort',ico:'📦',name:'分类收纳',desc:'把物品放到对应收纳盒'},
+];
+function renderMind(){
+  const box = $('mindList');
+  box.innerHTML = '';
+  MIND_GAMES.forEach(g=>{
+    const played = S.mindPlayed.includes(g.id);
+    const d = el('div','mind-card');
+    d.innerHTML = `<div class="ico">${g.ico}</div><div class="name">${g.name}</div><div class="desc">${g.desc}</div>`;
+    d.onclick = ()=>openGame(g);
+    box.appendChild(d);
+  });
+}
+function openGame(g){
+  const box = $('gameBox');
+  box.innerHTML = '<button class="game-close" onclick="closeGame()">×</button><h3>'+g.ico+' '+g.name+'</h3><div id="gameArea"></div>';
+  $('gameModal').classList.add('show');
+  if(g.id==='memory') gameMemory();
+  else if(g.id==='sequence') gameSequence();
+  else gameSimple(g);
+}
+function closeGame(){$('gameModal').classList.remove('show')}
+function markMindPlayed(id){
+  if(!S.mindPlayed.includes(id)){
+    S.mindPlayed.push(id);
+    save(); renderAch();
+    checkLearnToday();
+  }
+}
+/* 记忆翻牌 */
+function gameMemory(){
+  const area = $('gameArea');
+  const emojis = ['🍎','🍌','🍇','🍓','🌟','🌸','🐶','🐱'];
+  const cards = [...emojis,...emojis].sort(()=>Math.random()-.5);
+  let flipped=[], matched=0;
+  area.innerHTML = '<p style="text-align:center;color:#78909c;font-size:13px;margin:4px 0 12px">翻开两张相同的牌即可消除</p><div class="mem-grid" id="memGrid"></div>';
+  const grid = $('memGrid');
+  cards.forEach((e,i)=>{
+    const c = el('div','mem-card',e);
+    c.onclick = ()=>{
+      if(c.classList.contains('flip')||c.classList.contains('matched'))return;
+      c.classList.add('flip');
+      flipped.push({i,e,el:c});
+      if(flipped.length===2){
+        const [a,b]=flipped; flipped=[];
+        if(a.e===b.e){
+          setTimeout(()=>{a.el.classList.add('matched');b.el.classList.add('matched');matched+=2;
+            if(matched===cards.length){toast('🎉 全部找到了！');markMindPlayed('memory');setTimeout(closeGame,1200)}},300);
+        }else{
+          setTimeout(()=>{a.el.classList.remove('flip');b.el.classList.remove('flip')},800);
+        }
+      }
+    };
+    grid.appendChild(c);
+  });
+}
+/* 数字顺序 */
+function gameSequence(){
+  const area = $('gameArea');
+  const nums = [];
+  while(nums.length<8){const n=rand(1,20);if(!nums.includes(n))nums.push(n)}
+  nums.sort(()=>Math.random()-.5);
+  let next = 1;
+  const sorted = [...nums].sort((a,b)=>a-b);
+  area.innerHTML = '<p style="text-align:center;color:#78909c;font-size:13px;margin:4px 0 12px">按从小到大顺序点击数字</p><div class="seq-board" id="seqBoard"></div>';
+  const board = $('seqBoard');
+  nums.forEach(n=>{
+    const d = el('div','seq-num',n);
+    d.onclick = ()=>{
+      if(d.classList.contains('done'))return;
+      if(n===sorted[next-1]){
+        d.classList.add('done');next++;
+        if(next>nums.length){toast('🎉 完成了！');markMindPlayed('sequence');setTimeout(closeGame,1200)}
+      }else{d.classList.add('err');setTimeout(()=>d.classList.remove('err'),400)}
+    };
+    board.appendChild(d);
+  });
+}
+/* 简单游戏（找不同/影子/分类） */
+function gameSimple(g){
+  const area = $('gameArea');
+  if(g.id==='finddiff'){
+    const emojis=['🎈','🎈','🎈','🎈','🎈','🎈','🎈','🎀','🎈'];
+    const diff=7;
+    area.innerHTML='<p style="text-align:center;color:#78909c;font-size:13px;margin:4px 0 12px">找出不一样的那个</p><div class="mem-grid"></div>';
+    const grid=area.querySelector('.mem-grid');
+    emojis.forEach((e,i)=>{
+      const c=el('div','mem-card flip',e);
+      c.onclick=()=>{
+        if(i===diff){c.style.background='var(--green)';toast('🎉 找到了！');markMindPlayed('finddiff');setTimeout(closeGame,1000)}
+        else{c.style.background='var(--red)';setTimeout(()=>c.style.background='#fff',300)}
+      };
+      grid.appendChild(c);
+    });
+  }else if(g.id==='shadow'){
+    area.innerHTML='';
+    const wrap=el('div','',null);wrap.style.cssText='text-align:center;padding:20px';
+    const big=el('div','',null);big.style.fontSize='60px';big.textContent='🐰';wrap.appendChild(big);
+    const q=el('p',null,'这是小兔子的影子吗？');wrap.appendChild(q);
+    const row=el('div','',null);row.style.cssText='display:flex;gap:20px;justify-content:center;margin-top:16px';
+    const right=el('div','seq-num','🌑');
+    right.onclick=()=>{toast('🎉 配对成功！');markMindPlayed('shadow');setTimeout(closeGame,1000)};
+    const wrong=el('div','seq-num','🐱');
+    wrong.onclick=()=>toast('再想想');
+    row.appendChild(right);row.appendChild(wrong);wrap.appendChild(row);
+    area.appendChild(wrap);
+  }else if(g.id==='sort'){
+    area.innerHTML='';
+    const wrap=el('div','',null);wrap.style.cssText='text-align:center;padding:20px';
+    wrap.appendChild(el('p',null,'把物品放到对应收纳盒'));
+    const items=el('div','',null);items.style.cssText='display:flex;gap:12px;justify-content:center;margin:20px 0';
+    ['🍎','🚗','📚'].forEach(em=>{
+      const s=el('span',null,em);s.style.fontSize='40px';s.style.cursor='pointer';
+      s.onclick=()=>toast(em+'放对啦！');
+      items.appendChild(s);
+    });
+    wrap.appendChild(items);
+    const boxes=el('div','',null);boxes.style.cssText='display:flex;gap:12px;justify-content:center';
+    const b1=el('div',null,'📦 食物');b1.style.cssText='border:2px dashed #90caf9;border-radius:12px;padding:20px';
+    const b2=el('div',null,'📦 玩具');b2.style.cssText='border:2px dashed #90caf9;border-radius:12px;padding:20px';
+    boxes.appendChild(b1);boxes.appendChild(b2);wrap.appendChild(boxes);
+    const btn=el('button','top-tab','完成收纳');
+    btn.style.marginTop='16px';
+    btn.onclick=()=>{markMindPlayed('sort');toast('🎉 收纳完成！');closeGame()};
+    wrap.appendChild(btn);
+    area.appendChild(wrap);
+  }
+}
+
+/* ---------- 今日任务 ---------- */
+const TASKS = [
+  {key:'poem',ico:'📜',name:'背诵一首古诗',pts:5},
+  {key:'chars',ico:'✍️',name:'练习10个汉字',pts:5},
+  {key:'math',ico:'🔢',name:'做3道算术题',pts:3},
+  {key:'bike',ico:'🚲',name:'骑车10分钟',pts:2},
+  {key:'house',ico:'🧹',name:'帮忙做家务',pts:2},
+  {key:'toy',ico:'🧸',name:'自己收拾玩具',pts:2},
+];
+function checkTaskDate(){
+  if(S.taskDate !== todayStr()){
+    S.tasks = {};
+    S.taskDate = todayStr();
+    save();
+  }
+}
+function renderTasks(){
+  checkTaskDate();
+  const box = $('taskList');
+  box.innerHTML = '';
+  let todaySun = 0;
+  TASKS.forEach(t=>{
+    const done = S.tasks[t.key];
+    if(done) todaySun += t.pts;
+    const row = el('div','task-row'+(done?' done':''));
+    row.innerHTML = `
+      <div class="task-check ${done?'on':''}">${done?'✓':''}</div>
+      <div class="task-info">
+        <div class="name">${t.ico} ${t.name}</div>
+        <div class="pts">+${t.pts} ☀️</div>
+      </div>`;
+    row.onclick = ()=>{
+      S.tasks[t.key] = !S.tasks[t.key];
+      if(S.tasks[t.key]){
+        S.totalSun += t.pts;
+        toast('+'+t.pts+'☀️ '+t.name);
+        checkLearnToday();
+      }else{
+        S.totalSun = Math.max(0, S.totalSun - t.pts);
+      }
+      save(); renderTasks(); renderAch();
+    };
+    box.appendChild(row);
+  });
+  $('sunCount').textContent = todaySun;
+}
+
+/* ---------- 奖励/成就 ---------- */
+const ACHIEVEMENTS = [
+  {id:'first',ico:'🌱',name:'初出茅庐',desc:'完成第1天学习',check:()=>S.learnDays.length>=1},
+  {id:'chars10',ico:'📖',name:'识字小达人',desc:'学会10个汉字',check:()=>S.learnedChars.length>=10},
+  {id:'poem3',ico:'📜',name:'古诗小能手',desc:'背诵3首古诗',check:()=>S.poemRead.length>=3},
+  {id:'math10',ico:'🔢',name:'算术新星',desc:'答对10道题',check:()=>S.mathRight>=10},
+  {id:'mind5',ico:'🧠',name:'思维达人',desc:'完成5个思维游戏',check:()=>S.mindPlayed.length>=5},
+  {id:'week7',ico:'🔥',name:'全勤之星',desc:'连续学习7天',check:()=>{const d=S.learnDays;if(d.length<7)return false;const s=new Date(d[d.length-7]);const e=new Date(d[d.length-1]);return(e-s)/86400000===6}},
+];
+function renderAch(){
+  const box = $('achGrid');
+  box.innerHTML = '';
+  let unlocked = 0;
+  ACHIEVEMENTS.forEach(a=>{
+    const ok = a.check();
+    if(ok) unlocked++;
+    const d = el('div','ach-card'+(ok?' unlocked':''));
+    d.innerHTML = `<div class="badge">${ok?'✓':'🔒'}</div><div class="ico">${a.ico}</div><div class="name">${a.name}</div><div class="desc">${a.desc}</div>`;
+    box.appendChild(d);
+  });
+  $('totalSun').textContent = S.totalSun;
+  $('achTip').textContent = unlocked>=ACHIEVEMENTS.length ? '🏆 太棒了！所有成就已解锁！' : '已解锁 '+unlocked+'/'+ACHIEVEMENTS.length+'，继续加油解锁更多成就！';
+}
+
+/* ---------- 学习日历 ---------- */
+function calMove(dir){
+  S.calM += dir;
+  if(S.calM<0){S.calM=11;S.calY--}
+  if(S.calM>11){S.calM=0;S.calY++}
+  save(); renderCalendar();
+}
+function renderCalendar(){
+  const y=S.calY,m=S.calM;
+  $('calYM').textContent = y+'年'+(m+1)+'月';
+  const grid = $('calGrid');
+  grid.innerHTML = '';
+  ['日','一','二','三','四','五','六'].forEach(w=>grid.appendChild(el('div','cal-week',w)));
+  const first = new Date(y,m,1).getDay();
+  const days = new Date(y,m+1,0).getDate();
+  for(let i=0;i<first;i++) grid.appendChild(el('div','cal-cell empty'));
+  const today = todayStr();
+  for(let d=1;d<=days;d++){
+    const key = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const done = S.learnDays.includes(key);
+    const isToday = key===today;
+    grid.appendChild(el('div','cal-cell'+(done?' done':'')+(isToday?' today':''),d));
+  }
+  // 统计本月
+  const monthDays = S.learnDays.filter(d=>d.startsWith(y+'-'+String(m+1).padStart(2,'0'))).length;
+  $('calStats').innerHTML = `
+    <div class="cal-stat"><div class="v">${monthDays}</div><div class="l">📅 本月学习</div></div>
+    <div class="cal-stat"><div class="v">${S.totalSun}</div><div class="l">☀️ 累计阳光</div></div>
+    <div class="cal-stat"><div class="v">${ACHIEVEMENTS.filter(a=>a.check()).length}</div><div class="l">🎖️ 已解锁</div></div>`;
+}
+
+/* ---------- 记录学习日 ---------- */
+function checkLearnToday(){
+  const t = todayStr();
+  if(!S.learnDays.includes(t)){
+    S.learnDays.push(t);
+    S.learnDays.sort();
+    save(); renderAch(); renderCalendar();
+  }
+}
+
+/* ---------- PWA 提示 ---------- */
+function hidePwaTip(){$('pwaTip').classList.remove('show');localStorage.setItem('xx_pwa_tip','1')}
+function isIOS(){return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream}
+function showPwaTipIfNeed(){
+  // 只在 iOS Safari 且用户没关过提示时显示
+  if(!isIOS()) return;
+  if(localStorage.getItem('xx_pwa_tip')) return;
+  setTimeout(()=>$('pwaTip').classList.add('show'),4000);
+}
+
+/* ---------- 顶部跳转 ---------- */
+document.querySelectorAll('.top-tab').forEach(t=>{
+  t.onclick = ()=>goSection(t.dataset.jump);
+});
+
+/* ---------- 算术 tab ---------- */
+document.querySelectorAll('#mathTabs .tab').forEach(t=>{
+  t.onclick = ()=>{
+    document.querySelectorAll('#mathTabs .tab').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    S.mathType = t.dataset.mt;
+    save(); genMath();
+  };
+});
+
+/* ---------- 启动 ---------- */
+function init(){
+  renderNav();
+  renderCharTabs(); renderChars();
+  renderPoemTabs(); renderPoem();
+  renderBookTabs(); renderBooks();
+  renderPinyinTabs(); renderPinyin();
+  renderEngTabs(); renderEnglish();
+  genMath();
+  renderMind();
+  renderTasks();
+  renderAch();
+  renderCalendar();
+  // 路由：先清除所有 active，再跳转到指定页面
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  const hash = location.hash.replace('#','');
+  const target = (hash && NAV.find(n=>n.id===hash)) ? hash : 'tasks';
+  goSection(target);
+  showPwaTipIfNeed();
+  // 浮动按钮
+  window.addEventListener('scroll',()=>{
+    $('fab').style.opacity = window.scrollY>200?'1':'0';
+  });
+}
+init();
+</script>
+</body>
+</html>
