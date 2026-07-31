@@ -479,12 +479,40 @@ function $(id){return document.getElementById(id)}
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 
 /* ---------- 语音 ---------- */
+/* 语音：优先选高质量中文女声（iOS: Ting-Ting / Android: zh-CN 标准）*/
+let _voices = [];
+let _bestZhVoice = null;
+function loadVoices(){
+  _voices = speechSynthesis.getVoices() || [];
+  // 优先级：Ting-Ting(iOS最标准普通话) > zh-CN 系列 > Google 普通话
+  _bestZhVoice =
+    _voices.find(v=>/Ting-Ting/i.test(v.name)) ||           // iOS 最标准
+    _voices.find(v=>/Sinji|Mei-Jia/i.test(v.name)) ||        // 备选
+    _voices.find(v=>/zh-CN/i.test(v.lang) && /female|女/i.test(v.name)) ||
+    _voices.find(v=>/zh-CN/i.test(v.lang)) ||
+    _voices.find(v=>/cmn-Hans/i.test(v.lang)) ||
+    _voices.find(v=>/Google.*普通话|Google.*Mandarin/i.test(v.name)) ||
+    _voices.find(v=>/zh/i.test(v.lang));
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  speechSynthesis.onvoiceschanged = loadVoices;
+}
 function speak(text, lang){
   if(!('speechSynthesis' in window)){toast('浏览器不支持语音');return}
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang || 'zh-CN';
-  u.rate = 0.8; u.pitch = 1.1;
+  // 中文用最标准的语音，英文用 en-US
+  if(lang && lang.startsWith('en')){
+    u.voice = _voices.find(v=>/Samantha/i.test(v.name)) || _voices.find(v=>/en-US/i.test(v.lang)) || null;
+    u.rate = 0.85; u.pitch = 1.0;
+  } else {
+    if(_bestZhVoice) u.voice = _bestZhVoice;
+    u.rate = 0.75;   // 稍慢，让幼儿听清
+    u.pitch = 1.05;  // 略高，更亲切
+  }
+  u.volume = 1.0;
   speechSynthesis.speak(u);
 }
 
