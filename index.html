@@ -479,38 +479,55 @@ function $(id){return document.getElementById(id)}
 function el(tag,cls,html){const e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
 
 /* ---------- 语音 ---------- */
-/* 语音：优先选高质量中文女声（iOS: Ting-Ting / Android: zh-CN 标准）*/
+/* 语音：自动选最优普通话女声（iOS 18+: 杉杉/瀚/岚岚/黎漪 高音质）*/
 let _voices = [];
 let _bestZhVoice = null;
+function scoreVoice(v){
+  const n = v.name || '';
+  let s = 0;
+  // 高音质 > 优化音质 > 默认
+  if(/高音质/i.test(n)) s += 100;
+  if(/Enhanced/i.test(n)) s += 100;
+  if(/优化音质/i.test(n)) s += 50;
+  if(/Premium/i.test(n)) s += 80;
+  // 女声更亲切（汉语女名）
+  if(/杉杉|瀚|岚|黎漪|兰兰|薇薇|Ting|Tingting|Mei|Sinji/i.test(n)) s += 30;
+  // 必须中文
+  if(!/zh|cmn/i.test(v.lang)) s -= 1000;
+  return s;
+}
 function loadVoices(){
   _voices = speechSynthesis.getVoices() || [];
-  // 优先级：Ting-Ting(iOS最标准普通话) > zh-CN 系列 > Google 普通话
-  _bestZhVoice =
-    _voices.find(v=>/Ting-Ting/i.test(v.name)) ||           // iOS 最标准
-    _voices.find(v=>/Sinji|Mei-Jia/i.test(v.name)) ||        // 备选
-    _voices.find(v=>/zh-CN/i.test(v.lang) && /female|女/i.test(v.name)) ||
-    _voices.find(v=>/zh-CN/i.test(v.lang)) ||
-    _voices.find(v=>/cmn-Hans/i.test(v.lang)) ||
-    _voices.find(v=>/Google.*普通话|Google.*Mandarin/i.test(v.name)) ||
-    _voices.find(v=>/zh/i.test(v.lang));
+  // 找出所有中文语音，按分数排序
+  const zh = _voices.filter(v=>/zh|cmn/i.test(v.lang));
+  zh.sort((a,b)=>scoreVoice(b)-scoreVoice(a));
+  _bestZhVoice = zh[0] || _voices.find(v=>/zh|cmn/i.test(v.lang)) || null;
+  // 调试：列出已选
+  if(_bestZhVoice){
+    console.log('[Voice] 选用:', _bestZhVoice.name, _bestZhVoice.lang, '分:', scoreVoice(_bestZhVoice));
+  }
 }
 if('speechSynthesis' in window){
   loadVoices();
-  speechSynthesis.onvoiceschanged = loadVoices;
+  // iOS 上 onvoiceschanged 可能不触发，重复尝试
+  let tryCount = 0;
+  const tryLoad = setInterval(()=>{
+    loadVoices();
+    if(_voices.length>0 || tryCount++>10) clearInterval(tryLoad);
+  }, 200);
 }
 function speak(text, lang){
   if(!('speechSynthesis' in window)){toast('浏览器不支持语音');return}
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
   u.lang = lang || 'zh-CN';
-  // 中文用最标准的语音，英文用 en-US
   if(lang && lang.startsWith('en')){
     u.voice = _voices.find(v=>/Samantha/i.test(v.name)) || _voices.find(v=>/en-US/i.test(v.lang)) || null;
     u.rate = 0.85; u.pitch = 1.0;
   } else {
     if(_bestZhVoice) u.voice = _bestZhVoice;
-    u.rate = 0.75;   // 稍慢，让幼儿听清
-    u.pitch = 1.05;  // 略高，更亲切
+    u.rate = 0.7;   // 慢一些，让幼儿听清每个音
+    u.pitch = 1.0;
   }
   u.volume = 1.0;
   speechSynthesis.speak(u);
